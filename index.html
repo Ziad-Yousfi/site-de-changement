@@ -3,152 +3,139 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Échange de Campus</title>
+  <title>Échange de Campus - Zio Nasr</title>
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
   <style>
     :root {
-      --bg-light: #f0f4f8;
-      --bg-dark: #1e1e2f;
-      --card-light: #fff;
-      --card-dark: #2b2b3b;
-      --primary: #4a90e2;
-      --text-light: #333;
-      --text-dark: #f0f0f0;
-      --hover-glow: rgba(74,144,226,0.5);
+      --bg-color: #f9fafb;
+      --text-color: #111827;
+      --card-bg: #ffffff;
+      --accent: #6366f1;
+      --accent-hover: #4f46e5;
     }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    [data-theme="dark"] {
+      --bg-color: #111827;
+      --text-color: #f9fafb;
+      --card-bg: #1f2937;
+      --accent: #a78bfa;
+      --accent-hover: #7c3aed;
+    }
 
     body {
-      background: var(--bg-light);
-      color: var(--text-light);
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: var(--bg-color);
+      color: var(--text-color);
+      transition: background 0.5s ease, color 0.5s ease;
       display: flex;
       justify-content: center;
-      padding: 50px;
-      transition: background 0.3s, color 0.3s;
-    }
-
-    body.dark {
-      background: var(--bg-dark);
-      color: var(--text-dark);
+      padding: 40px 20px;
     }
 
     .container {
+      max-width: 700px;
       width: 100%;
-      max-width: 650px;
-      background: var(--card-light);
-      padding: 30px;
-      border-radius: 15px;
-      box-shadow: 0 8px 25px rgba(0,0,0,0.1);
-      transition: background 0.3s;
     }
 
-    body.dark .container {
-      background: var(--card-dark);
-      box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+    h1, h2 {
+      color: var(--accent);
+      text-shadow: 0 0 5px var(--accent);
     }
 
-    h1 {
-      text-align: center;
+    .card {
+      background: var(--card-bg);
+      border-radius: 16px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+      padding: 20px;
       margin-bottom: 20px;
+      transition: background 0.5s ease, transform 0.3s ease;
     }
 
-    form {
-      display: flex;
-      flex-direction: column;
-      gap: 15px;
+    .card:hover {
+      transform: translateY(-5px) scale(1.01);
+      box-shadow: 0 0 15px var(--accent);
     }
 
-    input[type="text"], input[type="tel"], select {
+    input, select, button {
       padding: 12px;
-      border: 2px solid #ddd;
       border-radius: 10px;
+      border: 2px solid #ddd;
+      margin-bottom: 10px;
+      width: 100%;
       transition: all 0.3s ease;
       background: inherit;
       color: inherit;
     }
 
-    input[type="text"]:focus, input[type="tel"]:focus, select:focus {
-      border-color: var(--primary);
+    input:focus, select:focus {
+      border-color: var(--accent);
       outline: none;
-      box-shadow: 0 0 8px var(--hover-glow);
+      box-shadow: 0 0 8px var(--accent);
     }
 
     button {
-      padding: 12px;
-      border: none;
-      border-radius: 10px;
-      background: var(--primary);
-      color: white;
-      font-weight: bold;
+      background: var(--accent);
+      color: #fff;
       cursor: pointer;
+      font-weight: bold;
       transition: background 0.3s, transform 0.2s, box-shadow 0.3s;
     }
 
     button:hover {
-      background: #357ABD;
+      background: var(--accent-hover);
       transform: scale(1.05);
-      box-shadow: 0 0 12px var(--hover-glow);
+      box-shadow: 0 0 12px var(--accent);
     }
 
-    .toggle-theme {
-      margin-bottom: 20px;
-      align-self: flex-end;
-      font-size: 0.9em;
-      padding: 8px 12px;
+    .toggle-btn {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      padding: 10px 16px;
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      box-shadow: 0 0 10px var(--accent);
+      transition: background 0.3s ease;
+      z-index: 1000;
     }
 
-    .filter-campus {
-      margin-bottom: 15px;
-    }
-
-    .annonces {
-      margin-top: 20px;
-    }
+    .toggle-btn:hover { background: var(--accent-hover); }
 
     .annonce {
-      background: #f4f6f8;
-      border-left: 5px solid var(--primary);
+      background: var(--card-bg);
+      border-left: 5px solid var(--accent);
       padding: 15px;
       margin-bottom: 15px;
-      border-radius: 10px;
+      border-radius: 12px;
       opacity: 0;
       transform: translateY(20px);
       animation: fadeInUp 0.5s forwards;
-      transition: background 0.3s;
-    }
-
-    body.dark .annonce {
-      background: #3a3a4a;
+      transition: background 0.5s;
     }
 
     @keyframes fadeInUp {
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
+      to { opacity: 1; transform: translateY(0); }
     }
+
+    label { font-weight: bold; margin-top: 10px; display: block; }
   </style>
 </head>
 <body>
+  <button class="toggle-btn" id="themeToggle">🌙 Mode sombre</button>
+
   <div class="container">
-    <button class="toggle-theme" id="themeToggle">Mode sombre</button>
     <h1>Échange de Campus</h1>
 
-    <div class="filter-campus">
-      <label for="filter">Filtrer par campus actuel :</label>
-      <select id="filter">
-        <option value="all">Tous</option>
-        <option value="Centre 1">Centre 1</option>
-        <option value="Centre 2">Centre 2</option>
-        <option value="Joulan">Joulan</option>
-        <option value="Agdal 1">Agdal 1</option>
-        <option value="Agdal 2">Agdal 2</option>
-      </select>
-    </div>
-
-    <form id="campusForm">
+    <form id="campusForm" class="card">
       <input type="text" id="nom" placeholder="Nom et prénom" required>
-      
       <label for="currentCampus">Campus actuel :</label>
       <select id="currentCampus" required>
         <option value="">--Choisir--</option>
@@ -158,7 +145,6 @@
         <option value="Agdal 1">Agdal 1</option>
         <option value="Agdal 2">Agdal 2</option>
       </select>
-
       <label for="desiredCampus">Campus souhaité :</label>
       <select id="desiredCampus" required>
         <option value="">--Choisir--</option>
@@ -168,68 +154,84 @@
         <option value="Agdal 1">Agdal 1</option>
         <option value="Agdal 2">Agdal 2</option>
       </select>
-
       <input type="tel" id="phone" placeholder="Numéro de téléphone" pattern="[0-9]{10}" required>
-
       <button type="submit">Envoyer</button>
     </form>
 
-    <div class="annonces" id="annoncesContainer"></div>
+    <div id="annoncesContainer"></div>
   </div>
 
   <script>
+    // 🔹 CONFIGURATION FIREBASE : Remplace par tes infos
+// Import the functions you need from the SDKs you need
+import { initializeApp } from "firebase/app";
+import { getAnalytics } from "firebase/analytics";
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
+
+// Your web app's Firebase configuration
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+const firebaseConfig = {
+  apiKey: "AIzaSyAy9gymOKJW0LBmOBYSSRU8swsuBUtSXKU",
+  authDomain: "site-de-changement.firebaseapp.com",
+  projectId: "site-de-changement",
+  storageBucket: "site-de-changement.firebasestorage.app",
+  messagingSenderId: "1098798831039",
+  appId: "1:1098798831039:web:aadd9d4f61b2ca0a57bd0a",
+  measurementId: "G-KJZ8PXHGMN"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app);
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
     const form = document.getElementById('campusForm');
     const annoncesContainer = document.getElementById('annoncesContainer');
     const themeToggle = document.getElementById('themeToggle');
-    const filterSelect = document.getElementById('filter');
-    let annonces = [];
 
-    // Changement de thème
+    // Mode sombre
     themeToggle.addEventListener('click', () => {
-      document.body.classList.toggle('dark');
-      themeToggle.textContent = document.body.classList.contains('dark') ? 'Mode clair' : 'Mode sombre';
+      const body = document.body;
+      if(body.getAttribute('data-theme') === 'dark') {
+        body.removeAttribute('data-theme');
+        themeToggle.textContent = '🌙 Mode sombre';
+      } else {
+        body.setAttribute('data-theme','dark');
+        themeToggle.textContent = '☀️ Mode clair';
+      }
     });
 
-    // Ajout d'annonce
-    form.addEventListener('submit', function(e) {
+    // Soumission formulaire
+    form.addEventListener('submit', async function(e){
       e.preventDefault();
-
       const nom = document.getElementById('nom').value.trim();
       const currentCampus = document.getElementById('currentCampus').value;
       const desiredCampus = document.getElementById('desiredCampus').value;
       const phone = document.getElementById('phone').value.trim();
+      if(!nom || !currentCampus || !desiredCampus || !phone) return alert("Veuillez remplir tous les champs");
 
-      if(!nom || !currentCampus || !desiredCampus || !phone){
-        alert('Veuillez remplir tous les champs correctement.');
-        return;
-      }
-
-      const annonce = { nom, currentCampus, desiredCampus, phone };
-      annonces.unshift(annonce);
-      displayAnnonces();
-
+      await db.collection("annonces").add({
+        nom, currentCampus, desiredCampus, phone,
+        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+      });
       form.reset();
     });
 
-    // Filtrage des annonces
-    filterSelect.addEventListener('change', displayAnnonces);
-
-    function displayAnnonces() {
-      const filter = filterSelect.value;
-      annoncesContainer.innerHTML = '';
-
-      annonces.forEach(a => {
-        if(filter === 'all' || a.currentCampus === filter) {
+    // Affichage en temps réel
+    db.collection("annonces").orderBy("timestamp","desc")
+      .onSnapshot(snapshot => {
+        annoncesContainer.innerHTML = '';
+        snapshot.forEach(doc => {
+          const a = doc.data();
           const div = document.createElement('div');
           div.classList.add('annonce');
-          div.innerHTML = `
-            <strong>${a.nom}</strong> souhaite changer de <em>${a.currentCampus}</em> vers <em>${a.desiredCampus}</em>.<br>
-            Contact : ${a.phone}
-          `;
+          div.innerHTML = `<strong>${a.nom}</strong> souhaite changer de <em>${a.currentCampus}</em> vers <em>${a.desiredCampus}</em>.<br>Contact : ${a.phone}`;
           annoncesContainer.appendChild(div);
-        }
+        });
       });
-    }
   </script>
 </body>
 </html>
+
