@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Échange de Campus</title>
+  <style>
+    :root {
+      --bg-light: #f0f4f8;
+      --bg-dark: #1e1e2f;
+      --card-light: #fff;
+      --card-dark: #2b2b3b;
+      --primary: #4a90e2;
+      --text-light: #333;
+      --text-dark: #f0f0f0;
+      --hover-glow: rgba(74,144,226,0.5);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+
+    body {
+      background: var(--bg-light);
+      color: var(--text-light);
+      display: flex;
+      justify-content: center;
+      padding: 50px;
+      transition: background 0.3s, color 0.3s;
+    }
+
+    body.dark {
+      background: var(--bg-dark);
+      color: var(--text-dark);
+    }
+
+    .container {
+      width: 100%;
+      max-width: 650px;
+      background: var(--card-light);
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+      transition: background 0.3s;
+    }
+
+    body.dark .container {
+      background: var(--card-dark);
+      box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    input[type="text"], input[type="tel"], select {
+      padding: 12px;
+      border: 2px solid #ddd;
+      border-radius: 10px;
+      transition: all 0.3s ease;
+      background: inherit;
+      color: inherit;
+    }
+
+    input[type="text"]:focus, input[type="tel"]:focus, select:focus {
+      border-color: var(--primary);
+      outline: none;
+      box-shadow: 0 0 8px var(--hover-glow);
+    }
+
+    button {
+      padding: 12px;
+      border: none;
+      border-radius: 10px;
+      background: var(--primary);
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.3s, transform 0.2s, box-shadow 0.3s;
+    }
+
+    button:hover {
+      background: #357ABD;
+      transform: scale(1.05);
+      box-shadow: 0 0 12px var(--hover-glow);
+    }
+
+    .toggle-theme {
+      margin-bottom: 20px;
+      align-self: flex-end;
+      font-size: 0.9em;
+      padding: 8px 12px;
+    }
+
+    .filter-campus {
+      margin-bottom: 15px;
+    }
+
+    .annonces {
+      margin-top: 20px;
+    }
+
+    .annonce {
+      background: #f4f6f8;
+      border-left: 5px solid var(--primary);
+      padding: 15px;
+      margin-bottom: 15px;
+      border-radius: 10px;
+      opacity: 0;
+      transform: translateY(20px);
+      animation: fadeInUp 0.5s forwards;
+      transition: background 0.3s;
+    }
+
+    body.dark .annonce {
+      background: #3a3a4a;
+    }
+
+    @keyframes fadeInUp {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <button class="toggle-theme" id="themeToggle">Mode sombre</button>
+    <h1>Échange de Campus</h1>
+
+    <div class="filter-campus">
+      <label for="filter">Filtrer par campus actuel :</label>
+      <select id="filter">
+        <option value="all">Tous</option>
+        <option value="Centre 1">Centre 1</option>
+        <option value="Centre 2">Centre 2</option>
+        <option value="Joulan">Joulan</option>
+        <option value="Agdal 1">Agdal 1</option>
+        <option value="Agdal 2">Agdal 2</option>
+      </select>
+    </div>
+
+    <form id="campusForm">
+      <input type="text" id="nom" placeholder="Nom et prénom" required>
+      
+      <label for="currentCampus">Campus actuel :</label>
+      <select id="currentCampus" required>
+        <option value="">--Choisir--</option>
+        <option value="Centre 1">Centre 1</option>
+        <option value="Centre 2">Centre 2</option>
+        <option value="Joulan">Joulan</option>
+        <option value="Agdal 1">Agdal 1</option>
+        <option value="Agdal 2">Agdal 2</option>
+      </select>
+
+      <label for="desiredCampus">Campus souhaité :</label>
+      <select id="desiredCampus" required>
+        <option value="">--Choisir--</option>
+        <option value="Centre 1">Centre 1</option>
+        <option value="Centre 2">Centre 2</option>
+        <option value="Joulan">Joulan</option>
+        <option value="Agdal 1">Agdal 1</option>
+        <option value="Agdal 2">Agdal 2</option>
+      </select>
+
+      <input type="tel" id="phone" placeholder="Numéro de téléphone" pattern="[0-9]{10}" required>
+
+      <button type="submit">Envoyer</button>
+    </form>
+
+    <div class="annonces" id="annoncesContainer"></div>
+  </div>
+
+  <script>
+    const form = document.getElementById('campusForm');
+    const annoncesContainer = document.getElementById('annoncesContainer');
+    const themeToggle = document.getElementById('themeToggle');
+    const filterSelect = document.getElementById('filter');
+    let annonces = [];
+
+    // Changement de thème
+    themeToggle.addEventListener('click', () => {
+      document.body.classList.toggle('dark');
+      themeToggle.textContent = document.body.classList.contains('dark') ? 'Mode clair' : 'Mode sombre';
+    });
+
+    // Ajout d'annonce
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+
+      const nom = document.getElementById('nom').value.trim();
+      const currentCampus = document.getElementById('currentCampus').value;
+      const desiredCampus = document.getElementById('desiredCampus').value;
+      const phone = document.getElementById('phone').value.trim();
+
+      if(!nom || !currentCampus || !desiredCampus || !phone){
+        alert('Veuillez remplir tous les champs correctement.');
+        return;
+      }
+
+      const annonce = { nom, currentCampus, desiredCampus, phone };
+      annonces.unshift(annonce);
+      displayAnnonces();
+
+      form.reset();
+    });
+
+    // Filtrage des annonces
+    filterSelect.addEventListener('change', displayAnnonces);
+
+    function displayAnnonces() {
+      const filter = filterSelect.value;
+      annoncesContainer.innerHTML = '';
+
+      annonces.forEach(a => {
+        if(filter === 'all' || a.currentCampus === filter) {
+          const div = document.createElement('div');
+          div.classList.add('annonce');
+          div.innerHTML = `
+            <strong>${a.nom}</strong> souhaite changer de <em>${a.currentCampus}</em> vers <em>${a.desiredCampus}</em>.<br>
+            Contact : ${a.phone}
+          `;
+          annoncesContainer.appendChild(div);
+        }
+      });
+    }
+  </script>
+</body>
+</html>
