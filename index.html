@@ -161,77 +161,67 @@
     <div id="annoncesContainer"></div>
   </div>
 
-  <script>
-    // 🔹 CONFIGURATION FIREBASE : Remplace par tes infos
-// Import the functions you need from the SDKs you need
-import { initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
+<script>
+  // 🔹 CONFIGURATION FIREBASE : Remplace par tes infos
+  const firebaseConfig = {
+    apiKey: "AIzaSyAy9gymOKJW0LBmOBYSSRU8swsuBUtSXKU",
+    authDomain: "site-de-changement.firebaseapp.com",
+    projectId: "site-de-changement",
+    storageBucket: "site-de-changement.appspot.com",
+    messagingSenderId: "1098798831039",
+    appId: "1:1098798831039:web:aadd9d4f61b2ca0a57bd0a",
+    measurementId: "G-KJZ8PXHGMN"
+  };
 
-// Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
-const firebaseConfig = {
-  apiKey: "AIzaSyAy9gymOKJW0LBmOBYSSRU8swsuBUtSXKU",
-  authDomain: "site-de-changement.firebaseapp.com",
-  projectId: "site-de-changement",
-  storageBucket: "site-de-changement.firebasestorage.app",
-  messagingSenderId: "1098798831039",
-  appId: "1:1098798831039:web:aadd9d4f61b2ca0a57bd0a",
-  measurementId: "G-KJZ8PXHGMN"
-};
+  // Initialisation Firebase (SDK compat)
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore();
+  const form = document.getElementById('campusForm');
+  const annoncesContainer = document.getElementById('annoncesContainer');
+  const themeToggle = document.getElementById('themeToggle');
 
-    const form = document.getElementById('campusForm');
-    const annoncesContainer = document.getElementById('annoncesContainer');
-    const themeToggle = document.getElementById('themeToggle');
+  // Mode sombre
+  themeToggle.addEventListener('click', () => {
+    const body = document.body;
+    if(body.getAttribute('data-theme') === 'dark') {
+      body.removeAttribute('data-theme');
+      themeToggle.textContent = '🌙 Mode sombre';
+    } else {
+      body.setAttribute('data-theme','dark');
+      themeToggle.textContent = '☀️ Mode clair';
+    }
+  });
 
-    // Mode sombre
-    themeToggle.addEventListener('click', () => {
-      const body = document.body;
-      if(body.getAttribute('data-theme') === 'dark') {
-        body.removeAttribute('data-theme');
-        themeToggle.textContent = '🌙 Mode sombre';
-      } else {
-        body.setAttribute('data-theme','dark');
-        themeToggle.textContent = '☀️ Mode clair';
-      }
+  // Soumission formulaire
+  form.addEventListener('submit', async function(e){
+    e.preventDefault();
+    const nom = document.getElementById('nom').value.trim();
+    const currentCampus = document.getElementById('currentCampus').value;
+    const desiredCampus = document.getElementById('desiredCampus').value;
+    const phone = document.getElementById('phone').value.trim();
+    if(!nom || !currentCampus || !desiredCampus || !phone) return alert("Veuillez remplir tous les champs");
+
+    await db.collection("annonces").add({
+      nom, currentCampus, desiredCampus, phone,
+      timestamp: firebase.firestore.FieldValue.serverTimestamp()
     });
+    form.reset();
+  });
 
-    // Soumission formulaire
-    form.addEventListener('submit', async function(e){
-      e.preventDefault();
-      const nom = document.getElementById('nom').value.trim();
-      const currentCampus = document.getElementById('currentCampus').value;
-      const desiredCampus = document.getElementById('desiredCampus').value;
-      const phone = document.getElementById('phone').value.trim();
-      if(!nom || !currentCampus || !desiredCampus || !phone) return alert("Veuillez remplir tous les champs");
-
-      await db.collection("annonces").add({
-        nom, currentCampus, desiredCampus, phone,
-        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+  // Affichage en temps réel
+  db.collection("annonces").orderBy("timestamp","desc")
+    .onSnapshot(snapshot => {
+      annoncesContainer.innerHTML = '';
+      snapshot.forEach(doc => {
+        const a = doc.data();
+        const div = document.createElement('div');
+        div.classList.add('annonce');
+        div.innerHTML = `<strong>${a.nom}</strong> souhaite changer de <em>${a.currentCampus}</em> vers <em>${a.desiredCampus}</em>.<br>Contact : ${a.phone}`;
+        annoncesContainer.appendChild(div);
       });
-      form.reset();
     });
-
-    // Affichage en temps réel
-    db.collection("annonces").orderBy("timestamp","desc")
-      .onSnapshot(snapshot => {
-        annoncesContainer.innerHTML = '';
-        snapshot.forEach(doc => {
-          const a = doc.data();
-          const div = document.createElement('div');
-          div.classList.add('annonce');
-          div.innerHTML = `<strong>${a.nom}</strong> souhaite changer de <em>${a.currentCampus}</em> vers <em>${a.desiredCampus}</em>.<br>Contact : ${a.phone}`;
-          annoncesContainer.appendChild(div);
-        });
-      });
-  </script>
+</script>
 </body>
 </html>
 
