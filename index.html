@@ -3,9 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Échange de Campus Par Ziad Yousfi</title>
+  <title>Échange de Campus — Campus Exchange Hub</title>
   <meta name="description" content="Trouvez votre partenaire d'échange de campus facilement. Publiez et recherchez des annonces en quelques clics.">
-  
+  <link rel="icon" type="image/x-icon" href="png-transparent-green-graduation-hat-solid-icon-removebg-preview.ico">
 
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -16,11 +16,9 @@
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-  
+
   <!-- Configuration Firebase avec fallback automatique -->
   <script>
-    // Configuration Firebase (fallback pour GitHub Pages)
-    // Si config.js existe, il sera chargé et écrasera cette configuration
     window.firebaseConfig = {
       apiKey: "AIzaSyAy9gymOKJW0LBmOBYSSRU8swsuBUtSXKU",
       authDomain: "site-de-changement.firebaseapp.com",
@@ -31,19 +29,10 @@
       measurementId: "G-KJZ8PXHGMN"
     };
   </script>
-  
-  <!-- Essayer de charger config.js (si disponible localement) -->
   <script src="config.js"></script>
-  
-  <!-- Après le chargement, utiliser la config disponible -->
   <script>
-    // Si config.js a été chargé, il aura défini firebaseConfig
-    // Sinon, on utilise window.firebaseConfig défini ci-dessus
     if (typeof firebaseConfig === 'undefined' && typeof window.firebaseConfig !== 'undefined') {
       var firebaseConfig = window.firebaseConfig;
-      console.log('✅ Configuration chargée depuis le fallback (GitHub Pages)');
-    } else if (typeof firebaseConfig !== 'undefined') {
-      console.log('✅ Configuration chargée depuis config.js (local)');
     }
   </script>
 
@@ -56,458 +45,905 @@
 
     :root {
       --bg-color: #f0f4f8;
+      --bg-secondary: #e2e8f0;
       --text-color: #1a202c;
-      --card-bg: rgba(255, 255, 255, 0.85);
+      --text-muted: #64748b;
+      --card-bg: rgba(255, 255, 255, 0.9);
+      --card-border: rgba(255, 255, 255, 0.6);
       --accent: #10b981;
       --accent-hover: #059669;
       --accent-light: rgba(16, 185, 129, 0.1);
-      --shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-      --shadow-hover: 0 12px 48px rgba(16, 185, 129, 0.3);
+      --accent-light-2: rgba(16, 185, 129, 0.15);
+      --shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+      --shadow-hover: 0 12px 48px rgba(16, 185, 129, 0.25);
+      --shadow-lg: 0 20px 60px rgba(0, 0, 0, 0.12);
       --gradient-1: linear-gradient(135deg, #10b981 0%, #34d399 100%);
       --gradient-2: linear-gradient(135deg, #059669 0%, #10b981 100%);
       --gradient-3: linear-gradient(135deg, #34d399 0%, #6ee7b7 100%);
-      --gradient-4: linear-gradient(135deg, #6ee7b7 0%, #a7f3d0 100%);
+      --gradient-hero: linear-gradient(135deg, #10b981 0%, #34d399 50%, #6ee7b7 100%);
+      --header-bg: rgba(240, 244, 248, 0.85);
+      --input-bg: rgba(255, 255, 255, 0.8);
+      --border-color: rgba(0, 0, 0, 0.08);
+      --divider: rgba(0, 0, 0, 0.06);
+      --radius-sm: 10px;
+      --radius-md: 16px;
+      --radius-lg: 24px;
+      --radius-xl: 32px;
     }
 
     [data-theme="dark"] {
       --bg-color: #0f172a;
+      --bg-secondary: #1e293b;
       --text-color: #f1f5f9;
-      --card-bg: rgba(30, 41, 59, 0.85);
+      --text-muted: #94a3b8;
+      --card-bg: rgba(30, 41, 59, 0.9);
+      --card-border: rgba(255, 255, 255, 0.06);
       --accent: #10b981;
       --accent-hover: #34d399;
       --accent-light: rgba(16, 185, 129, 0.1);
-      --shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-      --shadow-hover: 0 12px 48px rgba(16, 185, 129, 0.4);
+      --accent-light-2: rgba(16, 185, 129, 0.18);
+      --shadow: 0 4px 24px rgba(0, 0, 0, 0.3);
+      --shadow-hover: 0 12px 48px rgba(16, 185, 129, 0.35);
+      --shadow-lg: 0 20px 60px rgba(0, 0, 0, 0.4);
+      --header-bg: rgba(15, 23, 42, 0.85);
+      --input-bg: rgba(0, 0, 0, 0.2);
+      --border-color: rgba(255, 255, 255, 0.08);
+      --divider: rgba(255, 255, 255, 0.06);
+    }
+
+    html {
+      scroll-behavior: smooth;
     }
 
     body {
-      margin: 0;
       font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
       background: var(--bg-color);
       color: var(--text-color);
       transition: background 0.5s ease, color 0.5s ease;
       min-height: 100vh;
-      position: relative;
       overflow-x: hidden;
-      padding: 20px;
     }
 
-    /* Animated Background */
+    /* ─── Animated Background ─── */
     .bg-animation {
       position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      z-index: -1;
+      inset: 0;
+      z-index: -2;
       background: var(--gradient-1);
-      opacity: 0.1;
-      animation: gradientShift 15s ease infinite;
+      opacity: 0.06;
+      animation: gradientShift 20s ease infinite;
     }
 
     @keyframes gradientShift {
       0%, 100% { background: var(--gradient-1); }
-      25% { background: var(--gradient-2); }
-      50% { background: var(--gradient-3); }
-      75% { background: var(--gradient-4); }
+      33% { background: var(--gradient-2); }
+      66% { background: var(--gradient-3); }
     }
 
-    /* Floating Particles */
+    /* ─── Particles ─── */
     .particles {
       position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
+      inset: 0;
       z-index: -1;
       overflow: hidden;
+      pointer-events: none;
     }
 
     .particle {
       position: absolute;
-      width: 4px;
-      height: 4px;
+      width: 3px;
+      height: 3px;
       background: var(--accent);
       border-radius: 50%;
-      opacity: 0.3;
-      animation: float 20s infinite linear;
+      opacity: 0.2;
+      animation: float 25s infinite linear;
     }
 
     @keyframes float {
-      0% {
-        transform: translateY(100vh) translateX(0) rotate(0deg);
-        opacity: 0;
-      }
-      10% {
-        opacity: 0.3;
-      }
-      90% {
-        opacity: 0.3;
-      }
-      100% {
-        transform: translateY(-100px) translateX(100px) rotate(360deg);
-        opacity: 0;
-      }
+      0% { transform: translateY(100vh) translateX(0) rotate(0deg); opacity: 0; }
+      10% { opacity: 0.2; }
+      90% { opacity: 0.2; }
+      100% { transform: translateY(-100px) translateX(80px) rotate(360deg); opacity: 0; }
     }
 
-    /* Control Panel */
-    .controls {
+    /* ─── HEADER ─── */
+    .site-header {
       position: fixed;
-      top: 20px;
-      right: 20px;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
+      top: 0;
+      left: 0;
+      right: 0;
       z-index: 1000;
+      background: var(--header-bg);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border-color);
+      transition: background 0.5s ease, box-shadow 0.3s ease;
     }
 
-    .control-btn {
-      padding: 12px 20px;
+    .header-inner {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 0 24px;
+      height: 68px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .header-brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+    }
+
+    .header-logo {
+      width: 36px;
+      height: 36px;
+      background: var(--gradient-1);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+      flex-shrink: 0;
+    }
+
+    .header-title {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--text-color);
+      line-height: 1.2;
+    }
+
+    .header-subtitle {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      font-weight: 400;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .live-badge {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 12px;
+      background: var(--accent-light);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--accent);
+    }
+
+    .live-dot {
+      width: 7px;
+      height: 7px;
+      background: var(--accent);
+      border-radius: 50%;
+      animation: pulse 2s ease infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(0.85); }
+    }
+
+    .theme-btn {
+      padding: 8px 16px;
       background: var(--card-bg);
       backdrop-filter: blur(10px);
-      border: 2px solid var(--accent);
-      border-radius: 12px;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
       color: var(--text-color);
       cursor: pointer;
       font-weight: 600;
-      font-size: 14px;
+      font-size: 0.82rem;
+      font-family: inherit;
       transition: all 0.3s ease;
-      box-shadow: var(--shadow);
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 6px;
       white-space: nowrap;
     }
 
-    .control-btn:hover {
-      transform: translateY(-2px);
-      box-shadow: var(--shadow-hover);
+    .theme-btn:hover {
       background: var(--accent);
       color: white;
+      border-color: var(--accent);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
     }
 
-    .control-btn i {
-      font-size: 18px;
-    }
-
-    .container {
-      max-width: 800px;
-      width: 100%;
+    /* ─── MAIN LAYOUT ─── */
+    .main-content {
+      max-width: 900px;
       margin: 0 auto;
-      padding-top: 80px;
+      padding: 88px 24px 60px;
+    }
+
+    /* ─── HERO SECTION ─── */
+    .hero {
+      text-align: center;
+      padding: 48px 0 40px;
+    }
+
+    .hero-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 16px;
+      background: var(--accent-light);
+      border: 1px solid rgba(16, 185, 129, 0.25);
+      border-radius: 20px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--accent);
+      margin-bottom: 20px;
+      animation: fadeInDown 0.6s ease both;
     }
 
     h1 {
-      font-size: 3.5rem;
+      font-size: clamp(2.2rem, 5vw, 3.5rem);
       font-weight: 800;
       background: var(--gradient-1);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
-      text-align: center;
-      margin-bottom: 10px;
-      animation: fadeInDown 0.8s ease;
-      letter-spacing: -1px;
+      margin-bottom: 14px;
+      letter-spacing: -1.5px;
+      line-height: 1.1;
+      animation: fadeInDown 0.6s ease 0.1s both;
     }
 
-    .subtitle {
-      text-align: center;
-      color: var(--text-color);
-      opacity: 0.7;
-      margin-bottom: 40px;
+    .hero-subtitle {
+      color: var(--text-muted);
+      font-size: 1.05rem;
+      line-height: 1.6;
+      max-width: 500px;
+      margin: 0 auto 36px;
+      animation: fadeInDown 0.6s ease 0.2s both;
+    }
+
+    .hero-stats {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      animation: fadeInDown 0.6s ease 0.3s both;
+    }
+
+    .stat-pill {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 20px;
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 20px;
+      box-shadow: var(--shadow);
+      font-size: 0.88rem;
+      font-weight: 500;
+      backdrop-filter: blur(10px);
+    }
+
+    .stat-pill .stat-num {
+      font-weight: 800;
+      color: var(--accent);
       font-size: 1.1rem;
-      animation: fadeInDown 0.8s ease 0.2s both;
+      font-variant-numeric: tabular-nums;
     }
 
-    @keyframes fadeInDown {
-      from {
-        opacity: 0;
-        transform: translateY(-20px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
+    .stat-pill .stat-label {
+      color: var(--text-muted);
     }
 
+    /* ─── SECTION HEADERS ─── */
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .section-icon {
+      width: 38px;
+      height: 38px;
+      background: var(--accent-light);
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+
+    .section-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--text-color);
+    }
+
+    .section-desc {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    /* ─── CARDS ─── */
     .card {
       background: var(--card-bg);
       backdrop-filter: blur(20px);
-      border-radius: 24px;
+      -webkit-backdrop-filter: blur(20px);
+      border-radius: var(--radius-lg);
       box-shadow: var(--shadow);
-      padding: 35px;
-      margin-bottom: 30px;
-      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      animation: fadeInUp 0.8s ease 0.3s both;
-    }
-
-    @keyframes fadeInUp {
-      from {
-        opacity: 0;
-        transform: translateY(30px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
+      padding: 32px;
+      margin-bottom: 24px;
+      border: 1px solid var(--card-border);
+      transition: box-shadow 0.4s ease, transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      animation: fadeInUp 0.6s ease 0.3s both;
     }
 
     .card:hover {
-      transform: translateY(-8px) scale(1.02);
       box-shadow: var(--shadow-hover);
     }
 
+    @keyframes fadeInDown {
+      from { opacity: 0; transform: translateY(-16px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ─── FORM ─── */
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0 20px;
+    }
+
+    .form-grid .form-group:nth-child(1) {
+      grid-column: 1 / -1;
+    }
+
+    .form-grid .form-group:nth-child(4) {
+      grid-column: 1 / -1;
+    }
+
+    .form-grid .form-group:nth-child(5) {
+      grid-column: 1 / -1;
+    }
+
+    .form-grid .form-group:nth-child(6) {
+      grid-column: 1 / -1;
+    }
+
     .form-group {
-      margin-bottom: 20px;
+      margin-bottom: 18px;
       position: relative;
     }
 
     label {
       font-weight: 600;
-      margin-bottom: 8px;
+      margin-bottom: 7px;
       display: block;
       color: var(--text-color);
-      font-size: 0.95rem;
-      opacity: 0.9;
+      font-size: 0.875rem;
     }
 
     input, select {
-      padding: 16px 20px;
-      border-radius: 14px;
-      border: 2px solid rgba(0, 0, 0, 0.1);
-      margin-bottom: 0;
+      padding: 13px 16px;
+      border-radius: var(--radius-sm);
+      border: 1.5px solid var(--border-color);
       width: 100%;
-      transition: all 0.3s ease;
-      background: rgba(255, 255, 255, 0.5);
+      transition: all 0.25s ease;
+      background: var(--input-bg);
       color: var(--text-color);
-      font-size: 1rem;
+      font-size: 0.95rem;
       font-family: inherit;
+      appearance: none;
+      -webkit-appearance: none;
     }
 
-    small {
-      display: block;
-      margin-top: 5px;
-      opacity: 0.7;
-      font-size: 0.85rem;
-      color: var(--text-color);
-    }
-
-    [data-theme="dark"] input,
-    [data-theme="dark"] select {
-      background: rgba(0, 0, 0, 0.2);
-      border-color: rgba(255, 255, 255, 0.1);
+    select {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2310b981' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 14px center;
+      padding-right: 40px;
     }
 
     input:focus, select:focus {
       border-color: var(--accent);
       outline: none;
-      box-shadow: 0 0 0 4px var(--accent-light);
-      transform: translateY(-2px);
+      box-shadow: 0 0 0 3px var(--accent-light);
+      background: var(--card-bg);
     }
 
     input::placeholder {
+      color: var(--text-muted);
+      opacity: 0.8;
+    }
+
+    select option {
+      background: var(--bg-color);
       color: var(--text-color);
-      opacity: 0.5;
     }
 
     select option:disabled {
       opacity: 0.5;
-      color: #999;
+      color: var(--text-muted);
       font-style: italic;
     }
 
-    select option {
-      background: var(--card-bg);
-      color: var(--text-color);
+    small {
+      display: block;
+      margin-top: 6px;
+      font-size: 0.8rem;
+      color: var(--text-muted);
     }
 
-    button {
-      padding: 16px 32px;
+    /* Security code warning box */
+    .warning-box {
+      background: rgba(245, 158, 11, 0.08);
+      border: 1px solid rgba(245, 158, 11, 0.25);
+      border-radius: var(--radius-sm);
+      padding: 10px 14px;
+      margin-top: 8px;
+      font-size: 0.8rem;
+      color: #92400e;
+      display: flex;
+      gap: 8px;
+      align-items: flex-start;
+      line-height: 1.5;
+    }
+
+    [data-theme="dark"] .warning-box {
+      color: #fcd34d;
+      background: rgba(245, 158, 11, 0.06);
+      border-color: rgba(245, 158, 11, 0.2);
+    }
+
+    .divider {
+      height: 1px;
+      background: var(--divider);
+      margin: 24px 0;
+    }
+
+    /* ─── SUBMIT BUTTON ─── */
+    .submit-btn {
+      padding: 15px 32px;
       background: var(--gradient-1);
       color: #fff;
       cursor: pointer;
-      font-weight: 600;
+      font-weight: 700;
       font-size: 1rem;
+      font-family: inherit;
       border: none;
-      border-radius: 14px;
+      border-radius: var(--radius-sm);
       transition: all 0.3s ease;
-      box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);
+      box-shadow: 0 4px 20px rgba(16, 185, 129, 0.4);
       position: relative;
       overflow: hidden;
       width: 100%;
-      margin-top: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      letter-spacing: 0.3px;
     }
 
-    button::before {
+    .submit-btn::before {
       content: '';
       position: absolute;
-      top: 50%;
-      left: 50%;
-      width: 0;
-      height: 0;
-      border-radius: 50%;
-      background: rgba(255, 255, 255, 0.3);
-      transform: translate(-50%, -50%);
-      transition: width 0.6s, height 0.6s;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(255,255,255,0.15) 0%, transparent 100%);
+      opacity: 0;
+      transition: opacity 0.3s ease;
     }
 
-    button:hover::before {
-      width: 300px;
-      height: 300px;
+    .submit-btn:hover::before { opacity: 1; }
+
+    .submit-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 30px rgba(16, 185, 129, 0.55);
     }
 
-    button:hover {
-      transform: translateY(-3px) scale(1.02);
-      box-shadow: 0 8px 25px rgba(16, 185, 129, 0.5);
+    .submit-btn:active {
+      transform: translateY(0);
+      box-shadow: 0 4px 16px rgba(16, 185, 129, 0.4);
     }
 
-    button:active {
-      transform: translateY(-1px) scale(0.98);
+    /* ─── FILTERS SECTION ─── */
+    .filters-row {
+      display: flex;
+      gap: 12px;
+      align-items: flex-end;
+      flex-wrap: wrap;
     }
 
-    button span {
-      position: relative;
-      z-index: 1;
+    .filters-row .form-group {
+      flex: 1;
+      min-width: 200px;
+      margin-bottom: 0;
     }
 
+    .filter-count {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 22px;
+      height: 22px;
+      background: var(--accent);
+      color: white;
+      border-radius: 11px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 0 6px;
+    }
+
+    .secondary-btn {
+      padding: 13px 20px;
+      background: var(--card-bg);
+      color: var(--text-color);
+      border: 1.5px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 0.875rem;
+      font-family: inherit;
+      transition: all 0.25s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .secondary-btn:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+      background: var(--accent-light);
+    }
+
+    .filter-info-box {
+      margin-top: 14px;
+      padding: 12px 16px;
+      background: var(--accent-light);
+      border: 1px solid rgba(16, 185, 129, 0.2);
+      border-radius: var(--radius-sm);
+      font-size: 0.875rem;
+      color: var(--text-color);
+      display: none;
+      line-height: 1.5;
+    }
+
+    /* ─── ANNONCES LIST HEADER ─── */
+    .list-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+
+    .list-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--text-color);
+    }
+
+    .list-count {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      background: var(--bg-secondary);
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-weight: 600;
+    }
+
+    /* ─── ANNONCE CARD ─── */
     .annonce {
       background: var(--card-bg);
       backdrop-filter: blur(20px);
-      border-left: 4px solid var(--accent);
-      padding: 25px;
-      margin-bottom: 20px;
-      border-radius: 16px;
+      -webkit-backdrop-filter: blur(20px);
+      border-radius: var(--radius-md);
+      padding: 20px 22px;
+      margin-bottom: 14px;
+      border: 1px solid var(--card-border);
       opacity: 0;
-      transform: translateY(30px) scale(0.95);
-      animation: slideInCard 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+      transform: translateY(20px) scale(0.98);
+      animation: slideInCard 0.45s cubic-bezier(0.4, 0, 0.2, 1) forwards;
       transition: all 0.3s ease;
       box-shadow: var(--shadow);
       position: relative;
       overflow: hidden;
     }
 
-    .annonce::before {
+    .annonce::after {
       content: '';
       position: absolute;
-      top: 0;
       left: 0;
-      width: 100%;
-      height: 100%;
+      top: 0;
+      bottom: 0;
+      width: 3px;
       background: var(--gradient-1);
-      opacity: 0;
-      transition: opacity 0.3s ease;
-      z-index: -1;
+      border-radius: 0 2px 2px 0;
+      transition: width 0.3s ease;
     }
 
     .annonce:hover {
-      transform: translateX(8px) translateY(-4px);
+      transform: translateY(-3px);
       box-shadow: var(--shadow-hover);
-      border-left-width: 6px;
     }
 
-    .annonce:hover::before {
-      opacity: 0.05;
+    .annonce:hover::after {
+      width: 4px;
     }
 
     @keyframes slideInCard {
-      to {
-        opacity: 1;
-        transform: translateY(0) scale(1);
-      }
+      to { opacity: 1; transform: translateY(0) scale(1); }
     }
 
-    .annonce strong {
-      color: var(--accent);
-      font-size: 1.1rem;
-      display: block;
-      margin-bottom: 8px;
+    .annonce-inner {
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
     }
 
-    .annonce em {
-      color: var(--accent);
-      font-style: normal;
-      font-weight: 600;
+    /* Avatar */
+    .annonce-avatar {
+      width: 46px;
+      height: 46px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 1rem;
+      color: white;
+      flex-shrink: 0;
+      letter-spacing: -0.5px;
     }
 
-    .annonce .contact {
-      margin-top: 12px;
-      padding-top: 12px;
-      border-top: 1px solid rgba(0, 0, 0, 0.1);
+    .annonce-body {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .annonce-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .annonce-name-row {
       display: flex;
       align-items: center;
       gap: 8px;
-      font-size: 0.95rem;
+      flex-wrap: wrap;
     }
 
-    [data-theme="dark"] .annonce .contact {
-      border-top-color: rgba(255, 255, 255, 0.1);
+    .annonce-name {
+      font-weight: 700;
+      font-size: 1rem;
+      color: var(--text-color);
     }
 
-    /* Notification */
-    .notification {
-      position: fixed;
-      top: 20px;
-      left: 50%;
-      transform: translateX(-50%) translateY(-100px);
-      background: var(--card-bg);
-      backdrop-filter: blur(20px);
-      padding: 20px 30px;
-      border-radius: 16px;
-      box-shadow: var(--shadow-hover);
-      z-index: 2000;
-      opacity: 0;
-      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-      border: 2px solid var(--accent);
+    .match-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      background: var(--gradient-1);
+      color: white;
+      padding: 2px 9px;
+      border-radius: 10px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.2px;
+    }
+
+    /* Direction badge */
+    .direction-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--accent-light-2);
+      border: 1px solid rgba(16, 185, 129, 0.2);
+      border-radius: 8px;
+      padding: 6px 12px;
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--text-color);
+      margin-bottom: 12px;
+    }
+
+    .direction-badge .campus-tag {
+      font-weight: 700;
+      color: var(--accent);
+    }
+
+    .direction-arrow {
+      color: var(--accent);
+      font-size: 1rem;
+    }
+
+    .annonce-footer {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 16px;
+      padding-top: 10px;
+      border-top: 1px solid var(--divider);
+      flex-wrap: wrap;
+    }
+
+    .annonce-phone {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.875rem;
+      color: var(--text-color);
+      font-weight: 500;
+      text-decoration: none;
+      transition: color 0.2s ease;
+    }
+
+    .annonce-phone:hover {
+      color: var(--accent);
+    }
+
+    .annonce-date {
+      margin-left: auto;
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .delete-btn {
+      background: transparent;
+      border: 1px solid transparent;
+      color: #ef4444;
+      cursor: pointer;
+      padding: 6px 8px;
+      border-radius: 8px;
+      font-size: 1rem;
+      transition: all 0.25s ease;
+      opacity: 0.45;
+      flex-shrink: 0;
+      line-height: 1;
+    }
+
+    .delete-btn:hover {
+      opacity: 1;
+      background: rgba(239, 68, 68, 0.1);
+      border-color: rgba(239, 68, 68, 0.2);
+      transform: scale(1.1);
+    }
+
+    /* ─── EMPTY STATE ─── */
+    .empty-state {
+      text-align: center;
+      padding: 48px 24px;
+    }
+
+    .empty-state-svg {
+      width: 120px;
+      height: 120px;
+      margin: 0 auto 24px;
+      opacity: 0.6;
+    }
+
+    .empty-state-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--text-color);
+      margin-bottom: 8px;
+    }
+
+    .empty-state-text {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      margin-bottom: 24px;
+      line-height: 1.6;
+    }
+
+    .cta-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 24px;
+      background: var(--gradient-1);
+      color: white;
+      font-family: inherit;
+      font-weight: 600;
+      font-size: 0.9rem;
+      border: none;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 16px rgba(16, 185, 129, 0.4);
+      text-decoration: none;
+    }
+
+    .cta-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(16, 185, 129, 0.5);
+    }
+
+    /* ─── NOTIFICATION ─── */
+    .notification {
+      position: fixed;
+      top: 84px;
+      left: 50%;
+      transform: translateX(-50%) translateY(-20px);
+      background: var(--card-bg);
+      backdrop-filter: blur(20px);
+      padding: 14px 24px;
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-lg);
+      z-index: 2000;
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      border: 1px solid var(--card-border);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.9rem;
+      font-weight: 500;
+      white-space: nowrap;
+      max-width: calc(100vw - 48px);
     }
 
     .notification.show {
       opacity: 1;
       transform: translateX(-50%) translateY(0);
+      pointer-events: auto;
     }
 
-    .notification.success {
-      border-color: #10b981;
-      background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(52, 211, 153, 0.1) 100%);
-    }
+    .notification.success { border-color: rgba(16, 185, 129, 0.4); }
+    .notification.error { border-color: rgba(239, 68, 68, 0.4); }
 
-    .notification.error {
-      border-color: #ef4444;
-      background: linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(249, 115, 22, 0.1) 100%);
-    }
-
-    /* Loading Spinner */
+    /* ─── SPINNER ─── */
     .spinner {
       display: inline-block;
-      width: 20px;
-      height: 20px;
-      border: 3px solid rgba(255, 255, 255, 0.3);
+      width: 18px;
+      height: 18px;
+      border: 2.5px solid rgba(255, 255, 255, 0.35);
       border-radius: 50%;
       border-top-color: white;
-      animation: spin 0.8s linear infinite;
+      animation: spin 0.75s linear infinite;
+      flex-shrink: 0;
     }
 
     @keyframes spin {
       to { transform: rotate(360deg); }
     }
 
-    /* Modale de suppression */
+    /* ─── MODAL ─── */
     .modal {
       position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.7);
-      backdrop-filter: blur(5px);
+      inset: 0;
+      background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(8px);
       display: flex;
       justify-content: center;
       align-items: center;
       z-index: 3000;
-      animation: fadeIn 0.3s ease;
+      animation: fadeIn 0.25s ease;
+      padding: 24px;
     }
 
     @keyframes fadeIn {
@@ -518,68 +954,202 @@
     .modal-content {
       background: var(--card-bg);
       backdrop-filter: blur(20px);
-      border-radius: 24px;
-      padding: 35px;
-      max-width: 500px;
-      width: 90%;
-      box-shadow: var(--shadow-hover);
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      animation: slideUp 0.3s ease;
-      position: relative;
+      border-radius: var(--radius-lg);
+      padding: 32px;
+      max-width: 440px;
+      width: 100%;
+      box-shadow: var(--shadow-lg);
+      border: 1px solid var(--card-border);
+      animation: slideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
     @keyframes slideUp {
-      from {
-        opacity: 0;
-        transform: translateY(30px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
+      from { opacity: 0; transform: translateY(24px) scale(0.97); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .modal-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--text-color);
     }
 
     .modal-close {
-      transition: all 0.3s ease;
+      background: transparent;
+      border: none;
+      font-size: 22px;
+      cursor: pointer;
+      color: var(--text-muted);
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 8px;
+      transition: all 0.25s ease;
+      padding: 0;
+      line-height: 1;
     }
 
     .modal-close:hover {
-      opacity: 1 !important;
+      background: var(--bg-secondary);
+      color: var(--text-color);
       transform: rotate(90deg);
     }
 
-    .delete-btn:hover {
-      opacity: 1 !important;
+    .modal-text {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      line-height: 1.6;
+      margin-bottom: 20px;
     }
 
-    /* Responsive */
-    @media (max-width: 768px) {
-      h1 {
-        font-size: 2.5rem;
+    .modal-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    .danger-btn {
+      flex: 1;
+      padding: 12px;
+      background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+      color: white;
+      border: none;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      font-weight: 700;
+      font-size: 0.9rem;
+      font-family: inherit;
+      transition: all 0.25s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      box-shadow: 0 4px 14px rgba(239, 68, 68, 0.35);
+    }
+
+    .danger-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(239, 68, 68, 0.5);
+    }
+
+    .cancel-btn {
+      flex: 1;
+      padding: 12px;
+      background: var(--bg-secondary);
+      color: var(--text-color);
+      border: 1.5px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 0.9rem;
+      font-family: inherit;
+      transition: all 0.25s ease;
+    }
+
+    .cancel-btn:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    /* ─── FOOTER ─── */
+    .site-footer {
+      border-top: 1px solid var(--divider);
+      padding: 24px;
+      text-align: center;
+    }
+
+    .footer-inner {
+      max-width: 900px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      flex-wrap: wrap;
+    }
+
+    .footer-inner a {
+      color: var(--accent);
+      text-decoration: none;
+      font-weight: 600;
+      transition: opacity 0.2s ease;
+    }
+
+    .footer-inner a:hover { opacity: 0.75; }
+
+    .footer-sep {
+      opacity: 0.4;
+    }
+
+    /* ─── RESPONSIVE ─── */
+    @media (max-width: 640px) {
+      .main-content {
+        padding: 80px 16px 48px;
       }
 
-      .controls {
-        top: 10px;
-        right: 10px;
-      }
-
-      .control-btn {
-        padding: 10px 16px;
-        font-size: 12px;
-      }
-
-      .container {
-        padding-top: 100px;
+      .hero {
+        padding: 32px 0 28px;
       }
 
       .card {
-        padding: 25px;
+        padding: 24px 20px;
       }
-    }
 
-    /* Smooth scroll */
-    html {
-      scroll-behavior: smooth;
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .form-grid .form-group:nth-child(2),
+      .form-grid .form-group:nth-child(3) {
+        grid-column: auto;
+      }
+
+      .filters-row {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .secondary-btn {
+        width: 100%;
+        justify-content: center;
+      }
+
+      .hero-stats {
+        gap: 8px;
+      }
+
+      .stat-pill {
+        padding: 8px 14px;
+      }
+
+      .header-inner {
+        padding: 0 16px;
+      }
+
+      .live-badge {
+        display: none;
+      }
+
+      .annonce-inner {
+        gap: 12px;
+      }
+
+      .annonce-avatar {
+        width: 40px;
+        height: 40px;
+        font-size: 0.9rem;
+      }
     }
   </style>
 </head>
@@ -587,95 +1157,110 @@
   <div class="bg-animation"></div>
   <div class="particles" id="particles"></div>
 
-  <div class="controls">
-    <button class="control-btn" id="themeToggle">
-      <span>🌙</span>
-      <span>Thème</span>
-    </button>
-  </div>
+  <!-- ─── HEADER ─── -->
+  <header class="site-header">
+    <div class="header-inner">
+      <a href="#" class="header-brand">
+        <div class="header-logo">🔄</div>
+        <div>
+          <div class="header-title">Campus Exchange</div>
+          <div class="header-subtitle">Échange de campus facilité</div>
+        </div>
+      </a>
+      <div class="header-actions">
+        <div class="live-badge">
+          <div class="live-dot"></div>
+          Temps réel
+        </div>
+        <button class="theme-btn" id="themeToggle">
+          <span id="themeIcon">🌙</span>
+          <span id="themeLabel">Sombre</span>
+        </button>
+      </div>
+    </div>
+  </header>
 
+  <!-- ─── NOTIFICATION ─── -->
   <div class="notification" id="notification">
     <span id="notificationIcon">✅</span>
     <span id="notificationText">Annonce envoyée avec succès!</span>
   </div>
 
-  <!-- Modale de confirmation de suppression -->
+  <!-- ─── DELETE MODAL ─── -->
   <div class="modal" id="deleteModal" style="display: none;">
     <div class="modal-content">
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-        <h2 style="margin: 0; color: var(--accent);">🗑️ Supprimer l'annonce</h2>
-        <button class="modal-close" id="closeModal" style="background: transparent; border: none; font-size: 24px; cursor: pointer; color: var(--text-color); opacity: 0.7;">&times;</button>
+      <div class="modal-header">
+        <h2 class="modal-title">🗑️ Supprimer l'annonce</h2>
+        <button class="modal-close" id="closeModal">&times;</button>
       </div>
-      <p style="margin-bottom: 20px; color: var(--text-color); opacity: 0.9;">
-        Pour confirmer la suppression de votre annonce, veuillez entrer le code de sécurité que vous avez défini lors de la création :
+      <p class="modal-text">
+        Pour confirmer la suppression, entrez le code de sécurité que vous avez défini lors de la création de votre annonce.
       </p>
       <div class="form-group">
-        <label for="confirmCode">Code de sécurité :</label>
-        <input type="text" id="confirmCode" placeholder="Entrez le code de l'annonce" required>
+        <label for="confirmCode">Code de sécurité</label>
+        <input type="text" id="confirmCode" placeholder="Entrez votre code…" required autocomplete="off">
       </div>
-      <div style="display: flex; gap: 10px; margin-top: 20px;">
-        <button type="button" id="confirmDelete" style="flex: 1; background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);">
-          <span>🗑️ Confirmer la suppression</span>
+      <div class="modal-actions">
+        <button type="button" id="confirmDelete" class="danger-btn">
+          <span>🗑️</span>
+          <span>Supprimer</span>
         </button>
-        <button type="button" id="cancelDelete" style="flex: 1; background: var(--card-bg); color: var(--text-color); border: 2px solid var(--accent);">
-          <span>Annuler</span>
-        </button>
+        <button type="button" id="cancelDelete" class="cancel-btn">Annuler</button>
       </div>
     </div>
   </div>
 
-  <div class="container">
-    <h1>🔄 Échange de Campus</h1>
-    <p class="subtitle">Trouvez votre partenaire d'échange en quelques clics</p>
+  <!-- ─── MAIN CONTENT ─── -->
+  <main class="main-content">
 
+    <!-- Hero -->
+    <section class="hero">
+      <div class="hero-eyebrow">
+        <span>🎓</span>
+        Plateforme d'échange entre étudiants
+      </div>
+      <h1>Échange de Campus</h1>
+      <p class="hero-subtitle">
+        Trouvez un partenaire prêt à échanger son campus contre le vôtre. Publiez une annonce, filtrez par campus, et contactez directement.
+      </p>
+      <div class="hero-stats">
+        <div class="stat-pill">
+          <span class="stat-num" id="statCount">—</span>
+          <span class="stat-label">annonces actives</span>
+        </div>
+        <div class="stat-pill">
+          <span class="stat-num">5</span>
+          <span class="stat-label">campus disponibles</span>
+        </div>
+        <div class="stat-pill">
+          <span>⚡</span>
+          <span class="stat-label">Mise à jour instantanée</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ─── PUBLISH FORM ─── -->
     <form id="campusForm" class="card">
-      <div class="form-group">
-        <input type="text" id="nom" placeholder="Nom et prénom" required>
+      <div class="section-header">
+        <div class="section-icon">📝</div>
+        <div>
+          <div class="section-title">Publier une annonce</div>
+          <div class="section-desc">Remplissez le formulaire pour apparaître dans la liste</div>
+        </div>
       </div>
-      <div class="form-group">
-        <label for="currentCampus">📍 Campus actuel</label>
-        <select id="currentCampus" required>
-          <option value="">-- Choisir un campus --</option>
-          <option value="Centre 1">Centre 1</option>
-          <option value="Centre 2">Centre 2</option>
-          <option value="Joulan">Joulan</option>
-          <option value="Agdal 1">Agdal 1</option>
-          <option value="Agdal 2">Agdal 2</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label for="desiredCampus">🎯 Campus souhaité</label>
-        <select id="desiredCampus" required>
-          <option value="">-- Choisir un campus --</option>
-          <option value="Centre 1">Centre 1</option>
-          <option value="Centre 2">Centre 2</option>
-          <option value="Joulan">Joulan</option>
-          <option value="Agdal 1">Agdal 1</option>
-          <option value="Agdal 2">Agdal 2</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <input type="tel" id="phone" placeholder="📱 Numéro de téléphone" pattern="[0-9]{10}" required>
-      </div>
-      <div class="form-group">
-        <label for="code">🔐 Code de sécurité (nécessaire pour supprimer l'annonce) :</label>
-        <input type="text" id="code" placeholder="Choisissez un code (ex: 1234)" required minlength="3" maxlength="20">
-        <small style="display: block; margin-top: 5px; opacity: 0.7; font-size: 0.85rem;">⚠️ Important : Notez bien ce code, vous en aurez besoin pour supprimer votre annonce.</small>
-      </div>
-      <button type="submit">
-        <span id="submitText">Envoyer l'annonce</span>
-        <span id="submitLoader" class="spinner" style="display: none;"></span>
-      </button>
-    </form>
 
-    <!-- Filtres et recherche -->
-    <div class="card" id="filtersCard" style="margin-bottom: 30px;">
-      <h2 style="margin-bottom: 20px; font-size: 1.5rem; color: var(--accent);">🔍 Filtres de recherche</h2>
-      <div style="display: flex; gap: 15px; flex-wrap: wrap; align-items: end;">
-        <div class="form-group" style="flex: 1; min-width: 200px; margin-bottom: 0;">
-          <label for="filterCampus">Rechercher des personnes qui ont ce campus actuel :</label>
-          <select id="filterCampus" style="margin-bottom: 0;">
-            <option value="">-- Tous les campus --</option>
+      <div class="divider"></div>
+
+      <div class="form-grid">
+        <div class="form-group">
+          <label for="nom">👤 Nom et prénom</label>
+          <input type="text" id="nom" placeholder="Ex : Yousfi Ziad" required autocomplete="name">
+        </div>
+
+        <div class="form-group">
+          <label for="currentCampus">📍 Campus actuel</label>
+          <select id="currentCampus" required>
+            <option value="">— Choisir un campus —</option>
             <option value="Centre 1">Centre 1</option>
             <option value="Centre 2">Centre 2</option>
             <option value="Joulan">Joulan</option>
@@ -683,50 +1268,102 @@
             <option value="Agdal 2">Agdal 2</option>
           </select>
         </div>
-        <button type="button" id="clearFilter" style="padding: 16px 24px; background: var(--card-bg); color: var(--text-color); border: 2px solid var(--accent); width: auto; margin-top: 0;">
-          <span>🔄 Réinitialiser</span>
+
+        <div class="form-group">
+          <label for="desiredCampus">🎯 Campus souhaité</label>
+          <select id="desiredCampus" required>
+            <option value="">— Choisir un campus —</option>
+            <option value="Centre 1">Centre 1</option>
+            <option value="Centre 2">Centre 2</option>
+            <option value="Joulan">Joulan</option>
+            <option value="Agdal 1">Agdal 1</option>
+            <option value="Agdal 2">Agdal 2</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="phone">📱 Numéro de téléphone</label>
+          <input type="tel" id="phone" placeholder="Ex : 0612345678" pattern="[0-9]{10}" required autocomplete="tel">
+        </div>
+
+        <div class="form-group">
+          <label for="code">🔐 Code de sécurité</label>
+          <input type="text" id="code" placeholder="Choisissez un code (ex : 1234)" required minlength="3" maxlength="20" autocomplete="off">
+          <div class="warning-box">
+            ⚠️ Notez bien ce code — il vous sera demandé si vous souhaitez supprimer votre annonce ultérieurement.
+          </div>
+        </div>
+      </div>
+
+      <button type="submit" class="submit-btn">
+        <span id="submitIcon">🚀</span>
+        <span id="submitText">Publier l'annonce</span>
+        <span id="submitLoader" class="spinner" style="display: none;"></span>
+      </button>
+    </form>
+
+    <!-- ─── FILTERS ─── -->
+    <div class="card" id="filtersCard">
+      <div class="section-header" style="margin-bottom: 16px;">
+        <div class="section-icon">🔍</div>
+        <div>
+          <div class="section-title">Filtrer les annonces</div>
+          <div class="section-desc">Recherchez par campus de départ</div>
+        </div>
+      </div>
+
+      <div class="filters-row">
+        <div class="form-group">
+          <label for="filterCampus">Campus actuel à filtrer</label>
+          <select id="filterCampus">
+            <option value="">— Tous les campus —</option>
+            <option value="Centre 1">Centre 1</option>
+            <option value="Centre 2">Centre 2</option>
+            <option value="Joulan">Joulan</option>
+            <option value="Agdal 1">Agdal 1</option>
+            <option value="Agdal 2">Agdal 2</option>
+          </select>
+        </div>
+        <button type="button" id="clearFilter" class="secondary-btn">
+          <span>↺</span> Réinitialiser
         </button>
       </div>
-      <p id="filterInfo" style="margin-top: 15px; padding: 12px; background: var(--accent-light); border-radius: 8px; font-size: 0.9rem; opacity: 0.8; display: none;">
-        <strong>💡 Astuce :</strong> Sélectionnez un campus pour voir les personnes qui souhaitent échanger depuis ce campus.
-      </p>
+
+      <div class="filter-info-box" id="filterInfo"></div>
+    </div>
+
+    <!-- ─── ANNONCES ─── -->
+    <div class="list-header">
+      <div class="list-title">📋 Annonces</div>
+      <div class="list-count" id="listCount">Chargement…</div>
     </div>
 
     <div id="annoncesContainer"></div>
-  </div>
+
+  </main>
+
+  <!-- ─── FOOTER ─── -->
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <span>© 2025 Campus Exchange Hub</span>
+      <span class="footer-sep">•</span>
+      <span>Créé par <a href="https://github.com/Ziad-Yousfi" target="_blank" rel="noopener">Ziad Yousfi</a></span>
+      <span class="footer-sep">•</span>
+      <span>Propulsé par <a href="https://firebase.google.com" target="_blank" rel="noopener">Firebase</a></span>
+    </div>
+  </footer>
 
 <script>
-  // 🔹 CONFIGURATION FIREBASE
-  // La configuration est chargée depuis config.js (fichier non commité sur GitHub)
-  // ⚠️ IMPORTANT : Même si l'API key est cachée du repo, elle sera visible côté client
-  // La VRAIE sécurité se fait via les RÈGLES FIRESTORE dans la console Firebase
-  
-  // Vérifier que la configuration est chargée
-  if (typeof firebaseConfig === 'undefined') {
-    // Essayer le fallback (pour GitHub Pages)
-    if (typeof window.firebaseConfig !== 'undefined') {
-      firebaseConfig = window.firebaseConfig;
-      console.log('✅ Configuration chargée depuis le fallback (GitHub Pages)');
-    } else {
-      console.error('❌ Erreur: Aucune configuration Firebase trouvée!');
-      alert('Erreur de configuration Firebase. Vérifiez votre connexion et rechargez la page.');
-    }
-  }
-  
-  // Vérification finale
-  if (typeof firebaseConfig === 'undefined') {
-    console.error('❌ Configuration Firebase non disponible');
-  } else {
-    console.log('✅ Configuration Firebase prête:', firebaseConfig.projectId);
+  // ─── FIREBASE INIT ───
+  if (typeof firebaseConfig === 'undefined' && typeof window.firebaseConfig !== 'undefined') {
+    firebaseConfig = window.firebaseConfig;
   }
 
-  // Initialisation Firebase
   let db;
   try {
     firebase.initializeApp(firebaseConfig);
     db = firebase.firestore();
 
-    // --- Auth: sign in anonymously if no user (keeps apiKey public but requires auth for writes) ---
     if (firebase.auth) {
       firebase.auth().onAuthStateChanged(user => {
         if (!user) {
@@ -738,74 +1375,66 @@
         }
       });
     }
-    
-    // Vérifier la connexion (persistance optionnelle - compatible plan gratuit)
+
     db.enablePersistence().catch(err => {
-      if (err.code == 'failed-precondition') {
-        console.warn('Firestore: Persistance activée sur plusieurs onglets');
-      } else if (err.code == 'unimplemented') {
-        console.warn('Firestore: Persistance non supportée par ce navigateur');
-      }
-      // La persistance est optionnelle, on continue même si elle échoue
+      if (err.code === 'failed-precondition') console.warn('Firestore: multi-onglets');
+      else if (err.code === 'unimplemented') console.warn('Firestore: persistance non supportée');
     });
-    
-    console.log('✅ Firebase initialisé avec succès');
-    console.log('📋 Plan: Spark (Gratuit) - Compatible ✅');
+
+    console.log('✅ Firebase initialisé:', firebaseConfig.projectId);
   } catch (error) {
-    console.error('❌ Erreur d\'initialisation Firebase:', error);
+    console.error('❌ Erreur Firebase:', error);
     alert('Erreur de connexion à Firebase. Vérifiez votre configuration.');
   }
 
-  // Éléments DOM
-  const form = document.getElementById('campusForm');
-  const annoncesContainer = document.getElementById('annoncesContainer');
-  const themeToggle = document.getElementById('themeToggle');
-  const notification = document.getElementById('notification');
-  const submitText = document.getElementById('submitText');
-  const submitLoader = document.getElementById('submitLoader');
+  // ─── DOM REFS ───
+  const form               = document.getElementById('campusForm');
+  const annoncesContainer  = document.getElementById('annoncesContainer');
+  const themeToggle        = document.getElementById('themeToggle');
+  const themeIcon          = document.getElementById('themeIcon');
+  const themeLabel         = document.getElementById('themeLabel');
+  const notification       = document.getElementById('notification');
+  const submitText         = document.getElementById('submitText');
+  const submitIcon         = document.getElementById('submitIcon');
+  const submitLoader       = document.getElementById('submitLoader');
   const particlesContainer = document.getElementById('particles');
-  const currentCampusSelect = document.getElementById('currentCampus');
-  const desiredCampusSelect = document.getElementById('desiredCampus');
-  const filterCampusSelect = document.getElementById('filterCampus');
-  const clearFilterBtn = document.getElementById('clearFilter');
-  const filterInfo = document.getElementById('filterInfo');
-  
-  // Variable pour stocker toutes les annonces et le filtre actuel
+  const currentCampusSelect  = document.getElementById('currentCampus');
+  const desiredCampusSelect  = document.getElementById('desiredCampus');
+  const filterCampusSelect   = document.getElementById('filterCampus');
+  const clearFilterBtn       = document.getElementById('clearFilter');
+  const filterInfo           = document.getElementById('filterInfo');
+  const statCount            = document.getElementById('statCount');
+  const listCount            = document.getElementById('listCount');
+
   let allAnnonces = [];
   let currentFilter = '';
 
-  // Création des particules animées
-  function createParticles() {
-    const particleCount = 50;
-    for (let i = 0; i < particleCount; i++) {
-      const particle = document.createElement('div');
-      particle.classList.add('particle');
-      particle.style.left = Math.random() * 100 + '%';
-      particle.style.animationDelay = Math.random() * 20 + 's';
-      particle.style.animationDuration = (Math.random() * 10 + 15) + 's';
-      particlesContainer.appendChild(particle);
+  // ─── PARTICLES ───
+  (function createParticles() {
+    for (let i = 0; i < 40; i++) {
+      const p = document.createElement('div');
+      p.classList.add('particle');
+      p.style.left = Math.random() * 100 + '%';
+      p.style.animationDelay = Math.random() * 25 + 's';
+      p.style.animationDuration = (Math.random() * 12 + 18) + 's';
+      particlesContainer.appendChild(p);
     }
-  }
+  })();
 
-  createParticles();
-
-  // Mode sombre/clair
+  // ─── THEME ───
   const savedTheme = localStorage.getItem('theme');
-  
   if (savedTheme) {
     document.body.setAttribute('data-theme', savedTheme);
     updateThemeButton();
   }
 
   themeToggle.addEventListener('click', () => {
-    const body = document.body;
-    const currentTheme = body.getAttribute('data-theme');
-    
-    if (currentTheme === 'dark') {
-      body.removeAttribute('data-theme');
+    const isDark = document.body.getAttribute('data-theme') === 'dark';
+    if (isDark) {
+      document.body.removeAttribute('data-theme');
       localStorage.setItem('theme', 'light');
     } else {
-      body.setAttribute('data-theme', 'dark');
+      document.body.setAttribute('data-theme', 'dark');
       localStorage.setItem('theme', 'dark');
     }
     updateThemeButton();
@@ -813,50 +1442,94 @@
 
   function updateThemeButton() {
     const isDark = document.body.getAttribute('data-theme') === 'dark';
-    themeToggle.innerHTML = `<span>${isDark ? '☀️' : '🌙'}</span><span>${isDark ? 'Clair' : 'Sombre'}</span>`;
+    themeIcon.textContent  = isDark ? '☀️' : '🌙';
+    themeLabel.textContent = isDark ? 'Clair' : 'Sombre';
   }
 
-  // Fonction pour désactiver le campus actuel dans le select "campus souhaité"
+  // ─── AVATAR GENERATOR ───
+  const AVATAR_COLORS = [
+    ['#059669', '#34d399'],
+    ['#0ea5e9', '#38bdf8'],
+    ['#8b5cf6', '#a78bfa'],
+    ['#f59e0b', '#fcd34d'],
+    ['#ef4444', '#fca5a5'],
+    ['#ec4899', '#f9a8d4'],
+    ['#14b8a6', '#5eead4'],
+    ['#6366f1', '#a5b4fc'],
+  ];
+
+  function getAvatarColors(name) {
+    let hash = 0;
+    for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash);
+    return AVATAR_COLORS[Math.abs(hash) % AVATAR_COLORS.length];
+  }
+
+  function getInitials(name) {
+    const parts = name.trim().split(/\s+/);
+    if (parts.length >= 2) return (parts[0][0] + parts[1][0]).toUpperCase();
+    return name.slice(0, 2).toUpperCase();
+  }
+
+  // ─── TIME AGO ───
+  function timeAgo(timestamp) {
+    if (!timestamp || !timestamp.toDate) return '';
+    const diff = Date.now() - timestamp.toDate().getTime();
+    const m = Math.floor(diff / 60000);
+    const h = Math.floor(diff / 3600000);
+    const d = Math.floor(diff / 86400000);
+    if (m < 1)  return 'À l\'instant';
+    if (m < 60) return `Il y a ${m} min`;
+    if (h < 24) return `Il y a ${h}h`;
+    return `Il y a ${d}j`;
+  }
+
+  // ─── CAMPUS SELECT: disable current campus in desired ───
   function updateDesiredCampusOptions() {
-    const selectedCampus = currentCampusSelect.value;
-    const allOptions = desiredCampusSelect.querySelectorAll('option');
-    
-    allOptions.forEach(option => {
-      if (option.value === '') {
-        // Garder l'option vide activée
-        option.disabled = false;
-        option.style.opacity = '1';
-      } else if (option.value === selectedCampus) {
-        // Désactiver le campus actuel
-        option.disabled = true;
-        option.style.opacity = '0.5';
-      } else {
-        // Réactiver les autres options
-        option.disabled = false;
-        option.style.opacity = '1';
-      }
+    const selected = currentCampusSelect.value;
+    desiredCampusSelect.querySelectorAll('option').forEach(opt => {
+      if (opt.value === '') return;
+      opt.disabled = opt.value === selected;
     });
-    
-    // Si le campus souhaité actuel est le même que le campus actuel, le réinitialiser
-    if (desiredCampusSelect.value === selectedCampus) {
-      desiredCampusSelect.value = '';
-    }
+    if (desiredCampusSelect.value === selected) desiredCampusSelect.value = '';
   }
-
-  // Écouter les changements du campus actuel
   currentCampusSelect.addEventListener('change', updateDesiredCampusOptions);
-  
-  // Initialiser au chargement
   updateDesiredCampusOptions();
 
-  // Fonction pour afficher les annonces (avec filtre)
+  // ─── DISPLAY ANNONCES ───
   function displayAnnonces(annonces) {
     annoncesContainer.innerHTML = '';
-    
+
+    // Update counters
+    const total = allAnnonces.length;
+    statCount.textContent = total;
+    if (currentFilter) {
+      listCount.textContent = `${annonces.length} résultat${annonces.length !== 1 ? 's' : ''} sur ${total}`;
+    } else {
+      listCount.textContent = `${total} annonce${total !== 1 ? 's' : ''}`;
+    }
+
     if (annonces.length === 0) {
       annoncesContainer.innerHTML = `
-        <div class="card" style="text-align: center; opacity: 0.7;">
-          <p>${currentFilter ? 'Aucune annonce ne correspond à votre recherche. 🔍' : 'Aucune annonce pour le moment. Soyez le premier à publier! 🚀'}</p>
+        <div class="card">
+          <div class="empty-state">
+            <svg class="empty-state-svg" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="60" cy="60" r="56" stroke="currentColor" stroke-width="2" stroke-dasharray="6 4" opacity="0.3"/>
+              <circle cx="60" cy="44" r="16" fill="currentColor" opacity="0.15"/>
+              <path d="M30 88c0-16.6 13.4-30 30-30s30 13.4 30 30" stroke="currentColor" stroke-width="3" stroke-linecap="round" opacity="0.2"/>
+              <path d="M50 68h20M60 58v20" stroke="#10b981" stroke-width="2.5" stroke-linecap="round"/>
+            </svg>
+            <div class="empty-state-title">
+              ${currentFilter ? 'Aucun résultat pour ce filtre' : 'Aucune annonce pour l\'instant'}
+            </div>
+            <p class="empty-state-text">
+              ${currentFilter
+                ? `Personne n'a encore de campus actuel « <strong>${currentFilter}</strong> ».<br>Essayez un autre campus ou réinitialisez le filtre.`
+                : 'Soyez le premier à publier une annonce et trouvez votre partenaire d\'échange !'}
+            </p>
+            ${currentFilter
+              ? `<button class="cta-btn" onclick="document.getElementById('clearFilter').click()">↺ Voir toutes les annonces</button>`
+              : `<button class="cta-btn" onclick="document.getElementById('nom').focus(); document.getElementById('campusForm').scrollIntoView({behavior:'smooth'})">📝 Publier une annonce</button>`}
+          </div>
         </div>
       `;
       return;
@@ -866,365 +1539,237 @@
       const a = item.data;
       const div = document.createElement('div');
       div.classList.add('annonce');
-      div.style.animationDelay = `${index * 0.1}s`;
-      
-      // Formatage de la date si disponible
-      let dateStr = '';
-      if (a.timestamp && a.timestamp.toDate) {
-        const date = a.timestamp.toDate();
-        const now = new Date();
-        const diff = now - date;
-        const minutes = Math.floor(diff / 60000);
-        const hours = Math.floor(diff / 3600000);
-        const days = Math.floor(diff / 86400000);
-        
-        if (minutes < 1) dateStr = 'Il y a quelques secondes';
-        else if (minutes < 60) dateStr = `Il y a ${minutes} minute${minutes > 1 ? 's' : ''}`;
-        else if (hours < 24) dateStr = `Il y a ${hours} heure${hours > 1 ? 's' : ''}`;
-        else dateStr = `Il y a ${days} jour${days > 1 ? 's' : ''}`;
-      }
-      
-      // Badge pour les correspondances parfaites
+      div.style.animationDelay = `${index * 0.07}s`;
+
+      const [color1, color2] = getAvatarColors(a.nom || 'U');
+      const initials = getInitials(a.nom || 'Utilisateur');
+      const date = timeAgo(a.timestamp);
       const isMatch = currentFilter && a.currentCampus === currentFilter;
-      const matchBadge = isMatch ? '<span style="background: var(--accent); color: white; padding: 4px 8px; border-radius: 6px; font-size: 0.8rem; margin-left: 10px;">✨ Match parfait</span>' : '';
-      
+
       div.innerHTML = `
-        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; gap: 10px;">
-          <div style="flex: 1;">
-            <strong>${a.nom}${matchBadge}</strong>
+        <div class="annonce-inner">
+          <div class="annonce-avatar" style="background: linear-gradient(135deg, ${color1} 0%, ${color2} 100%);">
+            ${initials}
           </div>
-          <button class="delete-btn" data-annonce-id="${item.id}" style="background: transparent; border: none; color: #ef4444; cursor: pointer; padding: 3px 6px; border-radius: 4px; font-size: 0.7rem; transition: all 0.3s; opacity: 0.6; flex-shrink: 0;" onmouseover="this.style.opacity='1'; this.style.background='rgba(239, 68, 68, 0.15)'; this.style.transform='scale(1.1)';" onmouseout="this.style.opacity='0.6'; this.style.background='transparent'; this.style.transform='scale(1)';" title="Supprimer cette annonce">
-            🗑️
-          </button>
-        </div>
-        <p style="margin: 10px 0; line-height: 1.6;">
-          Souhaite changer de <em>${a.currentCampus}</em> vers <em>${a.desiredCampus}</em>
-        </p>
-        <div class="contact">
-          <span>📱</span>
-          <span>${a.phone}</span>
-          ${dateStr ? `<span style="margin-left: auto; opacity: 0.6; font-size: 0.85rem;">${dateStr}</span>` : ''}
+          <div class="annonce-body">
+            <div class="annonce-top">
+              <div class="annonce-name-row">
+                <span class="annonce-name">${a.nom}</span>
+                ${isMatch ? '<span class="match-badge">✨ Match parfait</span>' : ''}
+              </div>
+              <button class="delete-btn" data-id="${item.id}" title="Supprimer cette annonce">🗑️</button>
+            </div>
+            <div class="direction-badge">
+              <span class="campus-tag">${a.currentCampus}</span>
+              <span class="direction-arrow">→</span>
+              <span class="campus-tag">${a.desiredCampus}</span>
+            </div>
+            <div class="annonce-footer">
+              <a class="annonce-phone" href="tel:${a.phone}">
+                📱 ${a.phone}
+              </a>
+              ${date ? `<span class="annonce-date">🕐 ${date}</span>` : ''}
+            </div>
+          </div>
         </div>
       `;
+
+      div.querySelector('.delete-btn').addEventListener('click', () => showDeleteModal(item.id));
       annoncesContainer.appendChild(div);
-      
-      // Ajouter l'événement de suppression
-      const deleteBtn = div.querySelector('.delete-btn');
-      deleteBtn.addEventListener('click', () => showDeleteModal(item.id));
     });
   }
 
-  // Fonction de filtrage
+  // ─── FILTER ───
   function filterAnnonces() {
     currentFilter = filterCampusSelect.value;
-    
-    if (currentFilter === '') {
-      // Afficher toutes les annonces
+
+    if (!currentFilter) {
       displayAnnonces(allAnnonces);
       filterInfo.style.display = 'none';
     } else {
-      // Filtrer : afficher les personnes qui ont ce campus comme campus actuel
-      const filtered = allAnnonces.filter(item => {
-        return item.data.currentCampus === currentFilter;
-      });
-      
+      const filtered = allAnnonces.filter(item => item.data.currentCampus === currentFilter);
       displayAnnonces(filtered);
       filterInfo.style.display = 'block';
       filterInfo.innerHTML = `
-        <strong>🔍 Filtre actif :</strong> Affichage des personnes qui ont <strong>${currentFilter}</strong> comme campus actuel.
-        <br>Si vous souhaitez aller à <strong>${currentFilter}</strong>, ces personnes souhaitent peut-être partir de là ! 💡
+        <strong>🔍 Filtre actif :</strong> Personnes ayant <strong>${currentFilter}</strong> comme campus actuel.
+        Si vous souhaitez aller à <strong>${currentFilter}</strong>, ce sont vos partenaires potentiels ! 💡
       `;
     }
   }
 
-  // Écouter les changements du filtre
   filterCampusSelect.addEventListener('change', filterAnnonces);
-  
-  // Bouton pour réinitialiser le filtre
   clearFilterBtn.addEventListener('click', () => {
     filterCampusSelect.value = '';
     filterAnnonces();
   });
 
-  // Variables pour la suppression
+  // ─── DELETE MODAL ───
   let currentDeleteId = null;
-  const deleteModal = document.getElementById('deleteModal');
+  const deleteModal      = document.getElementById('deleteModal');
   const confirmCodeInput = document.getElementById('confirmCode');
   const confirmDeleteBtn = document.getElementById('confirmDelete');
-  const cancelDeleteBtn = document.getElementById('cancelDelete');
-  const closeModalBtn = document.getElementById('closeModal');
+  const cancelDeleteBtn  = document.getElementById('cancelDelete');
+  const closeModalBtn    = document.getElementById('closeModal');
 
-  // Fonction pour afficher la modale de suppression
-  function showDeleteModal(annonceId) {
-    currentDeleteId = annonceId;
-    deleteModal.style.display = 'flex';
+  function showDeleteModal(id) {
+    currentDeleteId = id;
     confirmCodeInput.value = '';
-    confirmCodeInput.focus();
+    deleteModal.style.display = 'flex';
+    setTimeout(() => confirmCodeInput.focus(), 100);
   }
 
-  // Fonction pour fermer la modale
   function closeDeleteModal() {
     deleteModal.style.display = 'none';
     currentDeleteId = null;
     confirmCodeInput.value = '';
   }
 
-  // Événements pour fermer la modale
   closeModalBtn.addEventListener('click', closeDeleteModal);
   cancelDeleteBtn.addEventListener('click', closeDeleteModal);
-  
-  // Fermer la modale en cliquant à l'extérieur
-  deleteModal.addEventListener('click', (e) => {
-    if (e.target === deleteModal) {
-      closeDeleteModal();
-    }
-  });
+  deleteModal.addEventListener('click', e => { if (e.target === deleteModal) closeDeleteModal(); });
 
-  // Fonction pour supprimer l'annonce
   async function deleteAnnonce() {
     const enteredCode = confirmCodeInput.value.trim();
-
-    // Vérifier que le champ est rempli
     if (!enteredCode) {
       showNotification('Veuillez entrer le code de sécurité', 'error');
       return;
     }
-
     try {
-      if (!db) {
-        throw new Error('Firebase n\'est pas initialisé');
-      }
-
-      // Récupérer l'annonce depuis Firestore pour vérifier le code
-      const annonceDoc = await db.collection("annonces").doc(currentDeleteId).get();
-      
-      if (!annonceDoc.exists) {
+      const doc = await db.collection('annonces').doc(currentDeleteId).get();
+      if (!doc.exists) {
         showNotification('Cette annonce n\'existe plus', 'error');
         closeDeleteModal();
         return;
       }
-
-      const annonceData = annonceDoc.data();
-      const storedCode = annonceData.code || '';
-
-      // Vérifier que le code correspond (insensible à la casse)
-      const codeMatch = enteredCode.toLowerCase().trim() === storedCode.toLowerCase().trim();
-
-      if (!codeMatch) {
-        showNotification('Le code de sécurité est incorrect', 'error');
+      const storedCode = (doc.data().code || '').toLowerCase().trim();
+      if (enteredCode.toLowerCase().trim() !== storedCode) {
+        showNotification('Code de sécurité incorrect', 'error');
         confirmCodeInput.style.borderColor = '#ef4444';
-        setTimeout(() => {
-          confirmCodeInput.style.borderColor = '';
-        }, 2000);
+        setTimeout(() => { confirmCodeInput.style.borderColor = ''; }, 2000);
         return;
       }
-
-      // Confirmer la suppression
-      if (!confirm('Êtes-vous sûr de vouloir supprimer cette annonce ? Cette action est irréversible.')) {
-        return;
-      }
-
-      await db.collection("annonces").doc(currentDeleteId).delete();
-      
-      showNotification('Annonce supprimée avec succès! ✅', 'success');
+      if (!confirm('Confirmer la suppression définitive de cette annonce ?')) return;
+      await db.collection('annonces').doc(currentDeleteId).delete();
+      showNotification('Annonce supprimée avec succès ✅', 'success');
       closeDeleteModal();
-      
-      console.log('✅ Annonce supprimée:', currentDeleteId);
-    } catch (error) {
-      console.error('❌ Erreur lors de la suppression:', error);
-      showNotification('Erreur lors de la suppression. Veuillez réessayer.', 'error');
+    } catch (err) {
+      console.error('Erreur suppression:', err);
+      showNotification('Erreur lors de la suppression', 'error');
     }
   }
 
-  // Événement pour confirmer la suppression
   confirmDeleteBtn.addEventListener('click', deleteAnnonce);
+  confirmCodeInput.addEventListener('keypress', e => { if (e.key === 'Enter') deleteAnnonce(); });
 
-  // Permettre la suppression avec Enter
-  confirmCodeInput.addEventListener('keypress', (e) => {
-    if (e.key === 'Enter') {
-      deleteAnnonce();
-    }
-  });
-
-  // Fonction de notification
+  // ─── NOTIFICATION ───
   function showNotification(message, type = 'success') {
-    const icon = document.getElementById('notificationIcon');
-    const text = document.getElementById('notificationText');
-    
-    icon.textContent = type === 'success' ? '✅' : '❌';
-    text.textContent = message;
+    document.getElementById('notificationIcon').textContent = type === 'success' ? '✅' : '❌';
+    document.getElementById('notificationText').textContent = message;
     notification.className = `notification ${type} show`;
-    
-    setTimeout(() => {
-      notification.classList.remove('show');
-    }, 3000);
+    setTimeout(() => notification.classList.remove('show'), 3500);
   }
 
-  // Soumission du formulaire
+  // ─── FORM SUBMIT ───
   form.addEventListener('submit', async function(e) {
     e.preventDefault();
-    
-    const nom = document.getElementById('nom').value.trim();
+
+    const nom           = document.getElementById('nom').value.trim();
     const currentCampus = document.getElementById('currentCampus').value;
     const desiredCampus = document.getElementById('desiredCampus').value;
-    const phone = document.getElementById('phone').value.trim();
-    const code = document.getElementById('code').value.trim();
-    
+    const phone         = document.getElementById('phone').value.trim();
+    const code          = document.getElementById('code').value.trim();
+
     if (!nom || !currentCampus || !desiredCampus || !phone || !code) {
       showNotification('Veuillez remplir tous les champs', 'error');
       return;
     }
-
     if (phone.length !== 10 || !/^\d+$/.test(phone)) {
       showNotification('Le numéro de téléphone doit contenir 10 chiffres', 'error');
       return;
     }
-
     if (code.length < 3) {
       showNotification('Le code de sécurité doit contenir au moins 3 caractères', 'error');
       return;
     }
 
-    // Afficher le loader
-    submitText.style.display = 'none';
+    submitText.style.display   = 'none';
+    submitIcon.style.display   = 'none';
     submitLoader.style.display = 'inline-block';
 
     try {
-      // Vérifier que Firebase est initialisé
-      if (!db) {
-        throw new Error('Firebase n\'est pas initialisé');
-      }
+      if (!db) throw new Error('Firebase non initialisé');
 
-      console.log('📤 Envoi des données...', { nom, currentCampus, desiredCampus, phone, code: '***' });
-      
-      // Ensure user is authenticated (anonymous auth) and attach ownerUid to the document
       if (firebase.auth && !firebase.auth().currentUser) {
-        try {
-          await firebase.auth().signInAnonymously();
-        } catch (err) {
-          console.warn('Sign-in anonymous failed before write', err);
-        }
+        try { await firebase.auth().signInAnonymously(); } catch (_) {}
       }
-      const ownerUid = (firebase.auth && firebase.auth().currentUser) ? firebase.auth().currentUser.uid : null;
+      const ownerUid = firebase.auth && firebase.auth().currentUser ? firebase.auth().currentUser.uid : null;
 
-      const docRef = await db.collection("annonces").add({
-        nom,
-        currentCampus,
-        desiredCampus,
-        phone,
-        code,
-        ownerUid,
+      const docRef = await db.collection('annonces').add({
+        nom, currentCampus, desiredCampus, phone, code, ownerUid,
         timestamp: firebase.firestore.FieldValue.serverTimestamp()
       });
-      
-      console.log('✅ Document créé avec l\'ID:', docRef.id);
-      
+
+      console.log('✅ Annonce créée:', docRef.id);
       form.reset();
-      showNotification('Annonce envoyée avec succès! 🎉');
-      
-      // Scroll vers les annonces
-      setTimeout(() => {
-        annoncesContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }, 500);
+      updateDesiredCampusOptions();
+      showNotification('Annonce publiée avec succès 🎉', 'success');
+      setTimeout(() => annoncesContainer.scrollIntoView({ behavior: 'smooth', block: 'start' }), 600);
     } catch (error) {
-      console.error('❌ Erreur détaillée:', error);
-      console.error('Code d\'erreur:', error.code);
-      console.error('Message d\'erreur:', error.message);
-      
-      let errorMessage = 'Erreur lors de l\'envoi. ';
-      
-      if (error.code === 'permission-denied') {
-        errorMessage += 'Accès refusé. Vérifiez les règles de sécurité Firestore dans la console Firebase.';
-      } else if (error.code === 'unavailable') {
-        errorMessage += 'Service indisponible. Vérifiez votre connexion internet.';
-      } else if (error.code === 'unauthenticated') {
-        errorMessage += 'Authentification requise.';
-      } else if (error.message) {
-        errorMessage += error.message;
-      } else {
-        errorMessage += 'Veuillez réessayer.';
-      }
-      
-      showNotification(errorMessage, 'error');
+      console.error('❌ Erreur:', error);
+      let msg = 'Erreur lors de l\'envoi. ';
+      if (error.code === 'permission-denied') msg += 'Accès refusé — vérifiez les règles Firestore.';
+      else if (error.code === 'unavailable')  msg += 'Service indisponible — vérifiez votre connexion.';
+      else msg += error.message || 'Veuillez réessayer.';
+      showNotification(msg, 'error');
     } finally {
-      submitText.style.display = 'inline';
+      submitText.style.display   = 'inline';
+      submitIcon.style.display   = 'inline';
       submitLoader.style.display = 'none';
     }
   });
 
-  // Affichage en temps réel des annonces
+  // ─── REALTIME LISTENER ───
   if (db) {
-    db.collection("annonces")
-      .orderBy("timestamp", "desc")
+    db.collection('annonces')
+      .orderBy('timestamp', 'desc')
       .onSnapshot(
         snapshot => {
-          console.log('📥 Données reçues:', snapshot.size, 'documents');
-          
-          // Stocker toutes les annonces
-          allAnnonces = [];
-          snapshot.forEach(doc => {
-            allAnnonces.push({
-              id: doc.id,
-              data: doc.data()
-            });
-          });
-          
-          // Appliquer le filtre actuel (ou afficher toutes si pas de filtre)
+          allAnnonces = snapshot.docs.map(doc => ({ id: doc.id, data: doc.data() }));
           filterAnnonces();
         },
         error => {
-          console.error('❌ Erreur Firestore:', error);
-          console.error('Code d\'erreur:', error.code);
-          
-          let errorMsg = 'Erreur de connexion. ';
-          if (error.code === 'permission-denied') {
-            errorMsg = '⚠️ Accès refusé. Les règles de sécurité Firestore bloquent la lecture. Vérifiez la console Firebase.';
-          } else if (error.code === 'unavailable') {
-            errorMsg = 'Service indisponible. Vérifiez votre connexion internet.';
-          }
-          
-          showNotification(errorMsg, 'error');
-          
+          console.error('❌ Firestore:', error);
+          let msg = 'Erreur de connexion.';
+          if (error.code === 'permission-denied') msg = '⚠️ Accès refusé — vérifiez les règles Firestore.';
+          else if (error.code === 'unavailable')  msg = 'Service indisponible — vérifiez votre connexion.';
+          showNotification(msg, 'error');
           annoncesContainer.innerHTML = `
-            <div class="card" style="text-align: center; opacity: 0.7;">
-              <p style="color: var(--accent);">⚠️ Erreur de chargement des annonces</p>
-              <p style="font-size: 0.9rem; margin-top: 10px;">Vérifiez la console pour plus de détails</p>
+            <div class="card">
+              <div class="empty-state">
+                <div class="empty-state-title">⚠️ Erreur de chargement</div>
+                <p class="empty-state-text">Impossible de charger les annonces. Vérifiez votre connexion et rechargez la page.</p>
+              </div>
             </div>
           `;
+          listCount.textContent = 'Erreur';
+          statCount.textContent = '—';
         }
       );
-  } else {
-    console.error('❌ Firebase n\'est pas initialisé');
-    annoncesContainer.innerHTML = `
-      <div class="card" style="text-align: center; opacity: 0.7;">
-        <p style="color: var(--accent);">⚠️ Firebase non initialisé</p>
-        <p style="font-size: 0.9rem; margin-top: 10px;">Vérifiez la configuration Firebase</p>
-      </div>
-    `;
   }
 
-  // Animation au scroll
-  const observerOptions = {
-    threshold: 0.1,
-    rootMargin: '0px 0px -50px 0px'
-  };
-
-  const observer = new IntersectionObserver((entries) => {
+  // ─── INTERSECTION OBSERVER for scroll animations ───
+  const observer = new IntersectionObserver(entries => {
     entries.forEach(entry => {
       if (entry.isIntersecting) {
         entry.target.style.opacity = '1';
         entry.target.style.transform = 'translateY(0)';
       }
     });
-  }, observerOptions);
+  }, { threshold: 0.08, rootMargin: '0px 0px -40px 0px' });
 
-  // Observer les annonces
   setTimeout(() => {
-    document.querySelectorAll('.annonce').forEach(annonce => {
-      observer.observe(annonce);
-    });
+    document.querySelectorAll('.annonce').forEach(el => observer.observe(el));
   }, 1000);
 </script>
 </body>
 </html>
-
