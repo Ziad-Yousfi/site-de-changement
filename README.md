@@ -1,95 +1,123 @@
-# Campus Exchange — by Ziad Yousfi
+# Campus Exchange Hub
 
-**Campus Exchange** is a lightweight web app that helps students post and browse campus exchange listings. The UI is static (HTML/CSS/JS) and uses **Firebase Firestore** to display listings in real time.
+> A real-time campus exchange platform for students — built with vanilla HTML/CSS/JS and Firebase.
+
+**Campus Exchange Hub** lets students post and browse campus transfer listings in seconds. No account required: just fill in your name, campuses, and phone number — your listing goes live instantly, visible to anyone looking for a match.
 
 ---
 
 ## Features
 
-- Post a listing: name, current campus, desired campus, phone number
-- Real-time listing updates
-- Filter by campus
-- Delete a listing (only by its owner)
-- Client-side anonymous authentication (UID stored in `ownerUid`)
-- Included Firestore rules to secure write operations
+- **Publish a listing** — name, current campus, desired campus, phone number
+- **Real-time updates** — listings appear and disappear without refreshing the page
+- **Filter by campus** — quickly find people coming from the campus you want
+- **Secure deletion** — each listing is protected by a personal security code; only the creator can delete it
+- **Anonymous authentication** — Firebase Auth silently assigns a `uid` to each visitor, stored as `ownerUid` for ownership checks
+- **Firestore security rules** — write operations are validated server-side; no raw open access
 
 ---
 
 ## Project structure
 
-- `site/`: site sources (HTML/CSS/JS)
-  - `index.html`: main page
-  - `config.example.js`: Firebase configuration example
-  - `config.js`: (optional, not committed) private configuration
-  - `firestore.rules`: recommended Firestore rules
-
----
-
-## Installation / Local testing
-
-1. Open the `site/` folder in VS Code.
-2. Serve `site/` with a local server (Live Server, http-server, or XAMPP). For example with Live Server: right click and choose `Open with Live Server`.
-3. Open `http://127.0.0.1:5500` (or the displayed URL) in your browser.
-
----
-
-## Firebase configuration
-
-The site expects a client-side Firebase configuration. Three options:
-
-1. (Simple) Edit the fallback in `site/index.html` (already present) to include your keys.
-2. (Recommended for GitHub Pages) Create a local (not committed) `config.js` file containing:
-
-```js
-// site/config.js
-window.firebaseConfig = {
-  apiKey: "YOUR_KEYS",
-  authDomain: "your-project.firebaseapp.com",
-  projectId: "your-project",
-  storageBucket: "...",
-  messagingSenderId: "...",
-  appId: "...",
-  measurementId: "..."
-};
+```
+Campus-Exchange-Hub/
+├── index.html            # Main page (UI + Firebase logic)
+├── config.example.js     # Firebase config template (copy → config.js)
+├── config.js             # Your local config — gitignored, never committed
+├── firestore.rules       # Recommended Firestore security rules
+└── logo.png              # App logo
 ```
 
-3. (Automated) Use GitHub Actions to inject `config.js` at deploy time from GitHub Secrets (see the CI section below).
+---
 
-> Note: the client-side `apiKey` is public by design. Security relies on Firestore rules / Auth / App Check.
+## Getting started
+
+### Prerequisites
+
+- A Firebase project with **Firestore** and **Anonymous Authentication** enabled
+- A local HTTP server (e.g. the VS Code [Live Server](https://marketplace.visualstudio.com/items?itemName=ritwickdey.LiveServer) extension)
+
+### Local setup
+
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/Ziad-Yousfi/Campus-Exchange-Hub.git
+   cd Campus-Exchange-Hub
+   ```
+
+2. Copy the config template and fill in your Firebase credentials:
+   ```bash
+   cp config.example.js config.js
+   ```
+   ```js
+   // config.js  —  never committed (see .gitignore)
+   window.firebaseConfig = {
+     apiKey: "YOUR_API_KEY",
+     authDomain: "your-project.firebaseapp.com",
+     projectId: "your-project",
+     storageBucket: "your-project.appspot.com",
+     messagingSenderId: "000000000000",
+     appId: "1:000000000000:web:xxxxxxxxxxxx",
+     measurementId: "G-XXXXXXXXXX"
+   };
+   ```
+
+3. Open `index.html` with Live Server (right-click → *Open with Live Server*) and navigate to `http://127.0.0.1:5500`.
+
+> **Note:** The Firebase Web `apiKey` is a *public identifier*, not a secret. Real security is enforced by Firestore Rules and Auth — not by hiding this key.
 
 ---
 
-## Firestore Rules (recommended)
+## Firestore security rules
 
-The `site/firestore.rules` file contains an example ruleset that:
+Apply the rules in `firestore.rules` to your project:
 
-- allows public reads,
-- requires authentication for `create`,
-- checks that `ownerUid == request.auth.uid`,
-- allows `update`/`delete` only for the owner.
+- **Read** — public, no authentication required
+- **Create** — requires a valid Firebase Auth session; all required fields must be present and valid
+- **Update / Delete** — restricted to the original creator (`ownerUid == request.auth.uid`)
 
-To enable: paste the content into Firebase Console → Firestore → Rules, or deploy via `firebase deploy --only firestore:rules`.
+**To deploy:**
+
+```bash
+firebase deploy --only firestore:rules
+```
+
+Or paste the content directly into **Firebase Console → Firestore → Rules**.
 
 ---
 
 ## Authentication
 
-The client uses Firebase Auth (anonymous) to obtain a `uid` and attach it to the `ownerUid` field. Make sure to enable Anonymous Auth in Firebase Console → Authentication → Sign-in method.
+The app uses **Firebase Anonymous Authentication** to silently assign a unique `uid` to each visitor. This `uid` is stored in the `ownerUid` field of each listing, enabling ownership-based access control without requiring users to create an account.
+
+Enable it in **Firebase Console → Authentication → Sign-in method → Anonymous**.
 
 ---
 
-## Deployment (GitHub Pages + secure config injection)
+## Deployment on GitHub Pages
 
-If you don't want to commit `config.js`, use GitHub Actions to generate `site/config.js` from repo secrets and publish `site/`.
+The project is designed to work on GitHub Pages with a CI pipeline that injects the Firebase config from GitHub Secrets — so `config.js` is never stored in the repository.
 
-Example workflow (place it in `.github/workflows/deploy.yml`):
+**1. Add your credentials to GitHub Secrets** (Settings → Secrets and variables → Actions):
+
+| Secret name | Value |
+|---|---|
+| `FIREBASE_API_KEY` | Your API key |
+| `FIREBASE_AUTH_DOMAIN` | `your-project.firebaseapp.com` |
+| `FIREBASE_PROJECT_ID` | `your-project` |
+| `FIREBASE_STORAGE_BUCKET` | `your-project.appspot.com` |
+| `FIREBASE_MESSAGING_SENDER_ID` | Your sender ID |
+| `FIREBASE_APP_ID` | Your app ID |
+| `FIREBASE_MEASUREMENT_ID` | `G-XXXXXXXXXX` |
+
+**2. Create the workflow** at `.github/workflows/deploy.yml`:
 
 ```yaml
-name: Build and deploy site
+name: Deploy to GitHub Pages
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
 
 jobs:
   deploy:
@@ -97,26 +125,17 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Create config.js from secrets
-        env:
-          API_KEY: ${{ secrets.FIREBASE_API_KEY }}
-          AUTH_DOMAIN: ${{ secrets.FIREBASE_AUTH_DOMAIN }}
-          PROJECT_ID: ${{ secrets.FIREBASE_PROJECT_ID }}
-          STORAGE_BUCKET: ${{ secrets.FIREBASE_STORAGE_BUCKET }}
-          MESSAGING_SENDER_ID: ${{ secrets.FIREBASE_MESSAGING_SENDER_ID }}
-          APP_ID: ${{ secrets.FIREBASE_APP_ID }}
-          MEASUREMENT_ID: ${{ secrets.FIREBASE_MEASUREMENT_ID }}
+      - name: Inject Firebase config from secrets
         run: |
-          cat > site/config.js <<'EOF'
-          // Generated by GitHub Actions
+          cat > config.js << EOF
           window.firebaseConfig = {
-            apiKey: "${API_KEY}",
-            authDomain: "${AUTH_DOMAIN}",
-            projectId: "${PROJECT_ID}",
-            storageBucket: "${STORAGE_BUCKET}",
-            messagingSenderId: "${MESSAGING_SENDER_ID}",
-            appId: "${APP_ID}",
-            measurementId: "${MEASUREMENT_ID}"
+            apiKey: "${{ secrets.FIREBASE_API_KEY }}",
+            authDomain: "${{ secrets.FIREBASE_AUTH_DOMAIN }}",
+            projectId: "${{ secrets.FIREBASE_PROJECT_ID }}",
+            storageBucket: "${{ secrets.FIREBASE_STORAGE_BUCKET }}",
+            messagingSenderId: "${{ secrets.FIREBASE_MESSAGING_SENDER_ID }}",
+            appId: "${{ secrets.FIREBASE_APP_ID }}",
+            measurementId: "${{ secrets.FIREBASE_MEASUREMENT_ID }}"
           };
           EOF
 
@@ -124,32 +143,30 @@ jobs:
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./site
+          publish_dir: ./
 ```
 
-Instructions: add your keys to GitHub Secrets, commit the workflow, and push to `main`.
+**3. Push to `main`** — GitHub Actions will build and deploy automatically.
 
 ---
 
-## Security & best practices
+## Security checklist
 
-- Never place service account keys on the client.
-- Protect sensitive operations using Firestore Rules or a backend (Cloud Functions).
-- Enable App Check (reCAPTCHA v3) to reduce automated abuse if needed.
-- Monitor usage and configure budget alerts.
+- [x] `config.js` is in `.gitignore` — never committed
+- [x] Firestore Rules enforce authentication and field validation on every write
+- [x] Anonymous Auth prevents unauthenticated writes
+- [ ] (Optional) Enable [Firebase App Check](https://firebase.google.com/docs/app-check) (reCAPTCHA v3) to block automated abuse
+- [ ] (Optional) Restrict the API key to your domain in [Google Cloud Console → APIs & Services → Credentials](https://console.cloud.google.com/apis/credentials)
+- [ ] (Optional) Set up Firebase budget alerts to monitor unexpected usage
 
 ---
 
 ## Contributing
 
-Fork, create a branch, and open a PR. For major improvements (backend, moderation), describe the plan and impact.
+Contributions are welcome. Fork the repo, create a feature branch, and open a pull request. For significant changes (moderation system, backend, etc.), please open an issue first to discuss the approach.
 
 ---
 
 ## License
 
-Choose a license (e.g., MIT) and replace this section if needed.
-
----
-
-Need help (CI deployment, rules, App Check)? Tell me what you'd like me to implement and I will.
+[MIT](LICENSE) © 2025 Ziad Yousfi
